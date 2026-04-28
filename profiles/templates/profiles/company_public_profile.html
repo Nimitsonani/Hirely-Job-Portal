@@ -1,0 +1,658 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Company Profile | Hirely{% endblock %}
+
+{% block css %}
+<style>
+    /* ================================== */
+    /* PAGE LAYOUT & BASE */
+    /* ================================== */
+    body {
+        background-color: #f8fafc;
+        color: #334155;
+    }
+    .public-profile-section {
+        padding: 130px 0 80px 0;
+        min-height: 100vh;
+    }
+    
+    .container {
+        max-width: 1600px !important; 
+        width: 92% !important; 
+        transition: all 0.3s ease;
+    }
+    
+    /* ================================== */
+    /* MODULAR CARD SYSTEM */
+    /* ================================== */
+    .profile-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 16px; 
+        overflow: hidden;
+    }
+
+    /* ================================== */
+    /* HEADER CARD (COVER & IDENTITY) */
+    /* ================================== */
+    .pro-cover {
+        height: 200px; 
+        background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+        position: relative;
+    }
+    .pro-header-content {
+        padding: 0 32px 32px 32px;
+        position: relative;
+    }
+    
+    /* Overlapping Logo/Avatar */
+    .pro-avatar-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: -65px;
+        margin-bottom: 20px;
+    }
+    .pro-avatar {
+        width: 140px; 
+        height: 140px;
+        border-radius: 16px; 
+        background-color: #ffffff;
+        border: 4px solid #ffffff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .pro-avatar i {
+        font-size: 60px;
+        color: #cbd5e1;
+    }
+    .pro-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; 
+        background-color: #f8fafc;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .pro-avatar img:hover {
+        transform: scale(1.03);
+    }
+    
+    /* Top Action Buttons */
+    .header-actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 15px; 
+    }
+    .btn-action {
+        background: #ffffff;
+        color: #334155;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        border: 1px solid #cbd5e1;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-action:hover {
+        background: #f8fafc;
+        color: #0f172a;
+        border-color: #94a3b8;
+    }
+    .btn-primary-action {
+        background: #3b82f6;
+        color: #ffffff;
+        border-color: #3b82f6;
+    }
+    .btn-primary-action:hover {
+        background: #2563eb;
+        color: #ffffff;
+        border-color: #2563eb;
+    }
+
+    /* Identity Section */
+    .pro-title-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .pro-name {
+        font-size: 26px; 
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0; 
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .badge-verified {
+        color: #3b82f6;
+        font-size: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Meta Group */
+    .pro-meta-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px; 
+        color: #64748b;
+        margin-top: 4px;
+    }
+    .meta-separator {
+        color: #cbd5e1;
+        font-size: 12px;
+    }
+    .pro-username {
+        font-weight: 500;
+    }
+    .pro-location {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* ================================== */
+    /* CONTENT BLOCKS (Inside Cards) */
+    /* ================================== */
+    .card-body {
+        padding: 28px 32px; 
+    }
+    
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-top: 0;
+        margin-bottom: 20px;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important; 
+        text-align: left !important;
+        gap: 10px;
+        width: 100%;
+        padding: 0 !important;
+    }
+    
+    .section-title i {
+        color: #3b82f6;
+        font-size: 20px;
+    }
+    .section-content {
+        font-size: 15px;
+        color: #475569;
+        line-height: 1.7;
+        white-space: pre-wrap;
+    }
+
+    /* Info Lists */
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .info-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        background: #eff6ff;
+        color: #3b82f6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    .info-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .info-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: #94a3b8;
+        letter-spacing: 0.5px;
+    }
+    .info-value {
+        font-size: 15px;
+        color: #334155;
+        font-weight: 500;
+        word-break: break-word;
+    }
+    .info-value a {
+        color: #3b82f6;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .info-value a:hover {
+        color: #2563eb;
+        text-decoration: underline;
+    }
+
+    /* ================================== */
+    /* JOBS TAB & LIST SECTION */
+    /* ================================== */
+    
+    /* Tabs System */
+    .job-tabs {
+        display: flex;
+        gap: 16px;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 24px;
+        overflow-x: auto;
+    }
+    .job-tab {
+        padding: 12px 16px;
+        font-weight: 600;
+        color: #64748b;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .job-tab:hover {
+        color: #0f172a;
+    }
+    .job-tab.active {
+        color: #3b82f6;
+        border-bottom-color: #3b82f6;
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Job List */
+    .job-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    /* Clickable Card */
+    .job-item {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none; /* remove link underline */
+        color: inherit; /* text color stays normal */
+        transition: all 0.2s ease;
+    }
+    .job-item:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        background-color: #f8fafc;
+    }
+    
+    .job-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .job-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0f172a;
+        margin: 0;
+    }
+    .job-item:hover .job-title {
+        color: #3b82f6; /* title turns blue on card hover */
+    }
+    .job-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        font-size: 14px;
+        color: #64748b;
+    }
+    .job-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .job-meta-item i {
+        color: #94a3b8;
+    }
+    
+    /* Badges */
+    .job-badge {
+        background: #eff6ff;
+        color: #3b82f6;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .status-badge {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+    .status-live { background: #dcfce7; color: #166534; }
+    .status-closed { background: #fee2e2; color: #991b1b; }
+    .status-app-closed { background: #fef9c3; color: #854d0e; }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #64748b;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px dashed #cbd5e1;
+    }
+
+    @media (max-width: 768px) {
+        .job-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="public-profile-section">
+    <div class="container">
+        
+        <div class="profile-card">
+            <div class="pro-cover"></div>
+            <div class="pro-header-content">
+                <div class="pro-avatar-wrapper">
+                    <div class="pro-avatar">
+                        {% if company.profile_picture %}
+                            <img src="{{ company.profile_picture.url }}" alt="{{ company.company_display_name }} Logo">
+                        {% else %}
+                            <i class="lni lni-apartment"></i>
+                        {% endif %}
+                    </div>
+                    
+                    {% if company.contact_email %}
+                    <div class="header-actions">
+                        <a href="mailto:{{ company.contact_email }}" class="btn-action btn-primary-action">
+                            <i class="lni lni-envelope"></i> Contact Us
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="pro-title-wrapper">
+                    <h2 class="pro-name">
+                        {{ company.company_display_name }}
+                        
+                        {% if company.is_verified %}
+                            <span class="badge-verified" title="Verified Company">
+                                <i class="lni lni-checkmark-circle"></i>
+                            </span>
+                        {% endif %}
+                    </h2>
+                    
+                    <div class="pro-meta-group">
+                        <span class="pro-username">@{{ company.company_username }}</span>
+                        <span class="meta-separator">•</span>
+                        <span class="pro-location">
+                            <i class="lni lni-map-marker"></i> {{ company.location }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8 col-12">
+                {% if company.description %}
+                <div class="profile-card h-100 mb-0">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-bulb"></i> About the Company
+                        </h3>
+                        <div class="section-content">{{ company.description|linebreaksbr }}</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-4 col-12">
+                {% if company.contact_email or company.contact_mobile_no %}
+                <div class="profile-card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-phone"></i> Contact Info
+                        </h3>
+                        
+                        <ul class="info-list">
+                            {% if company.contact_email %}
+                            <li>
+                                <div class="info-icon"><i class="lni lni-envelope"></i></div>
+                                <div class="info-text">
+                                    <span class="info-label">Email</span>
+                                    <span class="info-value">
+                                        <a href="mailto:{{ company.contact_email }}">{{ company.contact_email }}</a>
+                                    </span>
+                                </div>
+                            </li>
+                            {% endif %}
+                            
+                            {% if company.contact_mobile_no %}
+                            <li>
+                                <div class="info-icon"><i class="lni lni-mobile"></i></div>
+                                <div class="info-text">
+                                    <span class="info-label">Phone</span>
+                                    <span class="info-value">{{ company.contact_mobile_no }}</span>
+                                </div>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if company.website %}
+                <div class="profile-card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-link"></i> Web Links
+                        </h3>
+                        
+                        <ul class="info-list">
+                            <li>
+                                <div class="info-icon"><i class="lni lni-world"></i></div>
+                                <div class="info-text">
+                                    <span class="info-label">Website</span>
+                                    <span class="info-value">
+                                        <a href="{{ company.website }}" target="_blank">{{ company.website }}</a>
+                                    </span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="profile-card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-briefcase"></i> Jobs
+                        </h3>
+                        
+                        <div class="job-tabs">
+                            <div class="job-tab active" id="tab-all" onclick="switchJobTab('all')">All Jobs</div>
+                            <div class="job-tab" id="tab-live" onclick="switchJobTab('live')">Live</div>
+                            <div class="job-tab" id="tab-app-closed" onclick="switchJobTab('app-closed')">Applications Closed</div>
+                            <div class="job-tab" id="tab-closed" onclick="switchJobTab('closed')">Closed</div>
+                        </div>
+
+                        <div id="content-all" class="tab-content active">
+                            <div class="job-list">
+                                {% for job in all_jobs %}
+                                <a href="{% url 'job-details-page' job.job_id %}" class="job-item">
+                                    <div class="job-info">
+                                        <h4 class="job-title">{{ job.title }}</h4>
+                                        <div class="job-meta">
+                                            <span class="job-meta-item"><i class="lni lni-map-marker"></i> {{ job.location }}</span>
+                                            <span class="job-meta-item"><i class="lni lni-timer"></i> {{ job.get_job_type_display }}</span>
+                                            <span class="job-badge">{{ job.category }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="job-status">
+                                        {% if job.status == 'live' %}
+                                            <span class="status-badge status-live">Live</span>
+                                        {% elif job.status == 'applications_closed' %}
+                                            <span class="status-badge status-app-closed">Applications Closed</span>
+                                        {% elif job.status == 'closed' %}
+                                            <span class="status-badge status-closed">Closed</span>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                                {% empty %}
+                                <div class="empty-state">No jobs found in this category.</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div id="content-live" class="tab-content">
+                            <div class="job-list">
+                                {% for job in live_jobs %}
+                                <a href="{% url 'job-details-page' job.job_id %}" class="job-item">
+                                    <div class="job-info">
+                                        <h4 class="job-title">{{ job.title }}</h4>
+                                        <div class="job-meta">
+                                            <span class="job-meta-item"><i class="lni lni-map-marker"></i> {{ job.location }}</span>
+                                            <span class="job-meta-item"><i class="lni lni-timer"></i> {{ job.get_job_type_display }}</span>
+                                            <span class="job-badge">{{ job.category }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="job-status">
+                                        <span class="status-badge status-live">Live</span>
+                                    </div>
+                                </a>
+                                {% empty %}
+                                <div class="empty-state">No live jobs found.</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div id="content-app-closed" class="tab-content">
+                            <div class="job-list">
+                                {% for job in application_closed_jobs %}
+                                <a href="{% url 'job-details-page' job.job_id %}" class="job-item">
+                                    <div class="job-info">
+                                        <h4 class="job-title">{{ job.title }}</h4>
+                                        <div class="job-meta">
+                                            <span class="job-meta-item"><i class="lni lni-map-marker"></i> {{ job.location }}</span>
+                                            <span class="job-meta-item"><i class="lni lni-timer"></i> {{ job.get_job_type_display }}</span>
+                                            <span class="job-badge">{{ job.category }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="job-status">
+                                        <span class="status-badge status-app-closed">Applications Closed</span>
+                                    </div>
+                                </a>
+                                {% empty %}
+                                <div class="empty-state">No applications closed jobs found.</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div id="content-closed" class="tab-content">
+                            <div class="job-list">
+                                {% for job in closed_jobs %}
+                                <a href="{% url 'job-details-page' job.job_id %}" class="job-item">
+                                    <div class="job-info">
+                                        <h4 class="job-title">{{ job.title }}</h4>
+                                        <div class="job-meta">
+                                            <span class="job-meta-item"><i class="lni lni-map-marker"></i> {{ job.location }}</span>
+                                            <span class="job-meta-item"><i class="lni lni-timer"></i> {{ job.get_job_type_display }}</span>
+                                            <span class="job-badge">{{ job.category }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="job-status">
+                                        <span class="status-badge status-closed">Closed</span>
+                                    </div>
+                                </a>
+                                {% empty %}
+                                <div class="empty-state">No closed jobs found.</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    function switchJobTab(tabName) {
+        // Remove active class from all tabs
+        const allTabs = document.querySelectorAll('.job-tab');
+        allTabs.forEach(tab => tab.classList.remove('active'));
+
+        // Add active class to clicked tab
+        const clickedTab = document.getElementById('tab-' + tabName);
+        if (clickedTab) clickedTab.classList.add('active');
+
+        // Hide all tab content
+        const allContents = document.querySelectorAll('.tab-content');
+        allContents.forEach(content => content.classList.remove('active'));
+
+        // Show target tab content
+        const targetContent = document.getElementById('content-' + tabName);
+        if (targetContent) targetContent.classList.add('active');
+        
+        // Update URL parameter without refreshing
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('tab', tabName);
+        window.history.replaceState({}, '', newUrl);
+    }
+
+    // Auto load tab from URL on page load
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get('tab') || 'all'; 
+        
+        if (document.getElementById('tab-' + activeTab)) {
+            switchJobTab(activeTab);
+        }
+    });
+</script>
+{% endblock %}

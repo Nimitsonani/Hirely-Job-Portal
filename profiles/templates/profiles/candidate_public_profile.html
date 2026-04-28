@@ -1,0 +1,570 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Candidate Profile | Hirely{% endblock %}
+
+{% block css %}
+<style>
+    /* ================================== */
+    /* PAGE LAYOUT & BASE */
+    /* ================================== */
+    body {
+        background-color: #f8fafc;
+        color: #334155;
+    }
+    .public-profile-section {
+        padding: 130px 0 80px 0;
+        min-height: 100vh;
+    }
+    
+    /* Fluid container for wide screens */
+    .container {
+        max-width: 1600px !important; 
+        width: 92% !important; 
+        transition: all 0.3s ease;
+    }
+    
+    /* ================================== */
+    /* MODULAR CARD SYSTEM */
+    /* ================================== */
+    .profile-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 16px; 
+        overflow: hidden;
+    }
+
+    /* ================================== */
+    /* HEADER CARD (COVER & IDENTITY) */
+    /* ================================== */
+    .pro-cover {
+        height: 200px; 
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        position: relative;
+    }
+    .pro-header-content {
+        padding: 0 32px 32px 32px;
+        position: relative;
+    }
+    
+    /* Overlapping Avatar */
+    .pro-avatar-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: -65px;
+        margin-bottom: 20px;
+    }
+    .pro-avatar {
+        width: 140px; 
+        height: 140px;
+        border-radius: 50%;
+        background-color: #ffffff;
+        border: 4px solid #ffffff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .pro-avatar i {
+        font-size: 60px;
+        color: #cbd5e1;
+    }
+    .pro-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 15%;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .pro-avatar img:hover {
+        transform: scale(1.03);
+    }
+    
+    /* Top Action Buttons */
+    .header-actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 15px; 
+    }
+    .btn-action {
+        background: #ffffff;
+        color: #334155;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        border: 1px solid #cbd5e1;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-action:hover {
+        background: #f8fafc;
+        color: #0f172a;
+        border-color: #94a3b8;
+    }
+    .btn-primary-action {
+        background: #3b82f6;
+        color: #ffffff;
+        border-color: #3b82f6;
+    }
+    .btn-primary-action:hover {
+        background: #2563eb;
+        color: #ffffff;
+        border-color: #2563eb;
+    }
+
+    /* Identity Section */
+    .pro-title-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .pro-name {
+        font-size: 26px; 
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0; 
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .badge-level {
+        background: #f0fdf4;
+        color: #15803d;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid #bbf7d0;
+    }
+    
+    .pro-job-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #334155; 
+        margin: 0;
+    }
+
+    /* Meta Group (Username, Location) */
+    .pro-meta-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px; 
+        color: #64748b;
+        margin-top: 4px;
+    }
+    .meta-separator {
+        color: #cbd5e1;
+        font-size: 12px;
+    }
+    .pro-username {
+        font-weight: 500;
+    }
+    .pro-location {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* ================================== */
+    /* CONTENT BLOCKS (Inside Cards) */
+    /* ================================== */
+    .card-body {
+        padding: 28px 32px; 
+    }
+    
+    /* Default left-aligned section title */
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-top: 0;
+        margin-bottom: 20px;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        gap: 10px;
+        width: 100%;
+        padding: 0 !important;
+    }
+    
+    .section-title i {
+        color: #3b82f6;
+        font-size: 20px;
+    }
+    .section-content {
+        font-size: 15px;
+        color: #475569;
+        line-height: 1.7;
+        white-space: pre-wrap;
+    }
+
+    /* Skills Pill Design */
+    .skill-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start !important;
+        gap: 8px;
+    }
+    .skill-pill {
+        background: #f8fafc;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .skill-pill:hover {
+        background: #ffffff;
+        border-color: #3b82f6;
+        color: #3b82f6;
+        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Education & List Styles */
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .info-list-item {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .info-list-item:last-child {
+        margin-bottom: 0;
+    }
+    .info-icon-box {
+        width: 48px;
+        height: 48px;
+        background: #eff6ff;
+        color: #3b82f6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+    .info-details h4 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+        margin: 0 0 4px 0;
+    }
+    .info-meta {
+        font-size: 14px;
+        color: #64748b;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    /* Professional Links */
+    .links-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 8px;
+    }
+    .links-list a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+        color: #334155;
+        text-decoration: none;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        transition: 0.2s;
+        font-weight: 500;
+        width: fit-content;
+    }
+    .links-list a:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+    .links-list i {
+        font-size: 20px;
+        width: 24px;
+        text-align: center;
+    }
+
+    /* Brand Colors for Icons */
+    .lni-github-original { color: #181717; }
+    .lni-linkedin-original { color: #0a66c2; }
+    
+    /* ================================== */
+    /* LIGHTBOX STYLES */
+    /* ================================== */
+    .img-lightbox {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.95);
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .img-lightbox.active {
+        display: flex;
+        opacity: 1;
+    }
+    .img-lightbox img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+    .img-lightbox.active img {
+        transform: scale(1);
+    }
+    .lightbox-close {
+        position: absolute;
+        top: 25px;
+        right: 40px;
+        color: #ffffff;
+        font-size: 40px;
+        font-weight: 300;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="public-profile-section">
+    <div class="container">
+        
+        <div class="profile-card">
+            <div class="pro-cover"></div>
+            <div class="pro-header-content">
+                <div class="pro-avatar-wrapper">
+                    <div class="pro-avatar">
+                        {% if candidate.profile_picture %}
+                            <img src="{{ candidate.profile_picture.url }}" alt="{{ candidate.user.first_name }}'s Profile Picture" id="profilePicTrigger">
+                        {% else %}
+                            <i class="lni lni-user"></i>
+                        {% endif %}
+                    </div>
+<!--                     
+                    <div class="header-actions">
+                        <a href="#" class="btn-action btn-primary-action">
+                            <i class="lni lni-envelope"></i> Message
+                        </a>
+                    </div> -->
+                </div>
+                
+                <div class="pro-title-wrapper">
+                    <h2 class="pro-name">
+                        {{ candidate.user.first_name }} {{ candidate.user.last_name }}
+                        {% if candidate.experience_level %}
+                            <span class="badge-level">{{ candidate.get_experience_level_display }}</span>
+                        {% endif %}
+                    </h2>
+                    
+                    {% if candidate.job_title %}
+                        <h3 class="pro-job-title">{{ candidate.job_title }}</h3>
+                    {% endif %}
+                    
+                    <div class="pro-meta-group">
+                        <span class="pro-username">@{{ candidate.username }}</span>
+                        
+                        {% if candidate.location %}
+                            <span class="meta-separator">•</span>
+                            <span class="pro-location">
+                                <i class="lni lni-map-marker"></i> {{ candidate.location }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            
+            <div class="col-lg-8 col-12">
+                
+                {% if candidate.bio %}
+                <div class="profile-card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-user"></i> About
+                        </h3>
+                        <div class="section-content">{{ candidate.bio|linebreaksbr }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if candidate.experience_description %}
+                <div class="profile-card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-briefcase"></i> Experience
+                        </h3>
+                        <div class="section-content">{{ candidate.experience_description|linebreaksbr }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if candidate.projects %}
+                <div class="profile-card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-code"></i> Projects
+                        </h3>
+                        <div class="section-content">{{ candidate.projects|linebreaksbr }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if candidate.degree or candidate.college_name or candidate.university_name or candidate.school_name %}
+                <div class="profile-card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-graduation"></i> Education
+                        </h3>
+                        <ul class="info-list">
+                            <li class="info-list-item">
+                                <div class="info-icon-box">
+                                    <i class="lni lni-library"></i>
+                                </div>
+                                <div class="info-details">
+                                    {% if candidate.degree or candidate.field_of_study %}
+                                    <h4>
+                                        {{ candidate.degree }}{% if candidate.degree and candidate.field_of_study %} in {% endif %}{{ candidate.field_of_study }}
+                                    </h4>
+                                    {% endif %}
+                                    
+                                    <div class="info-meta">
+                                        {% if candidate.university_name %}
+                                            <span>University: {{ candidate.university_name }}</span>
+                                        {% endif %}
+                                        {% if candidate.college_name %}
+                                            <span>College: {{ candidate.college_name }}</span>
+                                        {% endif %}
+                                        {% if candidate.school_name %}
+                                            <span>School: {{ candidate.school_name }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-4 col-12">
+                
+                {% if candidate.skills %}
+                <div class="profile-card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-star"></i> Skills
+                        </h3>
+                        <div class="skill-wrapper">
+                            {% for skill in candidate.skills %}
+                                <span class="skill-pill">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="profile-card">
+                    <div class="card-body">
+                        <h3 class="section-title">
+                            <i class="lni lni-link"></i> Links
+                        </h3>
+                        <ul class="links-list">
+                            {% if candidate.github_link %}
+                            <li>
+                                <a href="{{ candidate.github_link }}" target="_blank">
+                                    <i class="lni lni-github-original"></i> GitHub
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% if candidate.linkedin_link %}
+                            <li>
+                                <a href="{{ candidate.linkedin_link }}" target="_blank">
+                                    <i class="lni lni-linkedin-original"></i> LinkedIn
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<div class="img-lightbox" id="imageLightbox">
+    <span class="lightbox-close" id="lightboxCloseBtn">&times;</span>
+    <img src="" alt="Full Resolution Profile" id="lightboxImageSrc">
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const triggerImg = document.getElementById('profilePicTrigger');
+        const lightbox = document.getElementById('imageLightbox');
+        const lightboxImg = document.getElementById('lightboxImageSrc');
+        const closeBtn = document.getElementById('lightboxCloseBtn');
+
+        if (triggerImg) {
+            triggerImg.addEventListener('click', function() {
+                lightboxImg.src = this.src; 
+                lightbox.classList.add('active');
+            });
+
+            closeBtn.addEventListener('click', function() {
+                lightbox.classList.remove('active');
+            });
+
+            lightbox.addEventListener('click', function(e) {
+                if (e.target !== lightboxImg) {
+                    lightbox.classList.remove('active');
+                }
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape" && lightbox.classList.contains('active')) {
+                    lightbox.classList.remove('active');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
