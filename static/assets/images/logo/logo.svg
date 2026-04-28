@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 150" width="100%" height="100%">
+  
+  <defs>
+    <!-- subtle gradient for depth -->
+    <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+
+    <!-- gold gradient for star -->
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(10, 15)">
+    
+    <!-- main shape -->
+    <path 
+      d="M 20 120 V 20 H 50 V 50 L 90 40 V 20 H 120 V 120 H 90 V 90 A 20 20 0 0 0 50 90 V 120 Z" 
+      fill="url(#blueGrad)" 
+    />
+
+    <!-- subtle highlight edge -->
+    <path 
+      d="M 20 120 V 20 H 50 V 50 L 90 40" 
+      stroke="#60a5fa" 
+      stroke-width="2" 
+      fill="none" 
+      opacity="0.4"
+    />
+    
+    <!-- star -->
+    <!-- <path 
+      d="M 70 78 Q 70 90 82 90 Q 70 90 70 102 Q 70 90 58 90 Q 70 90 70 78 Z" 
+      fill="url(#goldGrad)" 
+    /> -->
+  </g>
+
+  <!-- text -->
+  <text 
+    x="150" 
+    y="100" 
+    font-family="'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" 
+    font-size="68" 
+    font-weight="800" 
+    fill="#1e293b" 
+    letter-spacing="-1.5"
+  >
+    Hirely
+  </text>
+</svg>

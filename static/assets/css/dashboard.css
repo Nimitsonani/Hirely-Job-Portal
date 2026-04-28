@@ -1,0 +1,338 @@
+/* ============================= */
+/* MAIN CARD */
+/* ============================= */
+
+.job-items {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+/* ============================= */
+/* HEADER */
+/* ============================= */
+
+.job-header {
+    margin-bottom: 20px;
+}
+
+.job-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.job-header p {
+    margin: 5px 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* ============================= */
+/* JOB CARD ROW */
+/* ============================= */
+
+.job-card {
+    display: flex;
+    align-items: center;
+    padding: 18px 10px;
+    border-bottom: 1px solid #eee;
+
+    gap: 20px;
+    transition: all 0.2s ease;
+
+    flex-wrap: wrap; 
+    
+    /* Required for the stretched link overlay */
+    position: relative; 
+}
+
+/* Hover effect moved to the card itself */
+.job-card:hover {
+    background: #ecefff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+}
+
+/* ============================= */
+/* LEFT */
+/* ============================= */
+
+.job-info {
+    flex: 1;
+    min-width: 200px; 
+}
+
+.job-info h3 {
+    margin: 0;
+    font-size: 16px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.meta {
+    font-size: 13px;
+    color: #777;
+    margin-top: 4px;
+}
+
+/* ============================= */
+/* RIGHT / ACTIONS */
+/* ============================= */
+
+.job-actions {
+    display: flex;
+    gap: 10px;
+    
+    /* Pushes the button perfectly to the far right */
+    margin-left: auto; 
+    
+    justify-content: flex-end;
+    position: relative; 
+    z-index: 2; 
+}
+
+.btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #3b5bdb;
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.btn.outline {
+    background: transparent;
+    border: 1px solid #3b5bdb;
+    color: #3b5bdb;
+}
+
+/* Edit Icon Button Styling */
+.edit-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: #f1f3f5;
+    color: #555;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.2s ease;
+}
+
+.edit-icon-btn:hover {
+    background: #3b5bdb;
+    color: #fff;
+}
+
+/* Flips the pencil icon horizontally */
+.pencil-icon {
+    display: inline-block;
+    transform: scaleX(-1); 
+}
+
+/* ============================= */
+/* STRETCHED LINK (OVERLAY) */
+/* ============================= */
+
+/* The invisible link that makes the whole card clickable */
+.card-overlay-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1; /* Sets the base clickable layer */
+}
+
+/* ============================= */
+/* PAGINATION */
+/* ============================= */
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination-list {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination-list li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 36px;
+    min-width: 36px;
+    padding: 0 10px;
+
+    border-radius: 6px;
+    background: #f1f3f5;
+    color: #333;
+    text-decoration: none;
+
+    transition: all 0.2s ease;
+}
+
+.pagination-list li.active a {
+    background: #3b5bdb;
+    color: #fff;
+}
+
+.pagination-list li a:hover {
+    background: #3b5bdb;
+    color: #fff;
+}
+
+/* ============================= */
+/* NEW COLUMNS */
+/* ============================= */
+
+.job-col {
+    width: 120px;
+    font-size: 13px;
+    text-align: center;
+    flex-shrink: 0;
+    min-width: 100px; 
+}
+
+.job-col .label {
+    display: block;
+    font-size: 11px;
+    color: #888;
+}
+
+.job-status {
+    width: 110px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    min-width: 90px;
+}
+
+/* DOT */
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot.live {
+    background: #2ecc71;
+}
+
+.dot.closed {
+    background: #e74c3c;
+}
+
+/* ============================= */
+/* SIDEBAR */
+/* ============================= */
+
+.dashbord-sidebar {
+    background: #fff;
+    padding: 20px 15px;
+    border-radius: 12px;
+}
+
+.dashbord-sidebar ul li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px 12px;
+    border-radius: 8px;
+
+    text-decoration: none;
+    color: #333;
+
+    background: transparent;
+    border: none;
+
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.dashbord-sidebar ul li a i {
+    font-size: 18px;
+}
+
+.dashbord-sidebar ul li a:hover {
+    background: #3b5bdb;
+}
+
+.dashbord-sidebar ul li a.active {
+    background: #3b5bdb;
+    color: #fff;
+}
+
+/* ============================= */
+/* LAYOUT FIX */
+/* ============================= */
+
+.row {
+    --bs-gutter-x: 1rem;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1320px;
+    }
+}
+
+/* ============================= */
+/* MOBILE RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 768px) {
+
+    .job-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Stack properly, removed old .job-stats reference */
+    .job-status,
+    .job-col,
+    .job-actions {
+        width: 100%;
+        text-align: left;
+    }
+    
+    /* Align actions to the left on mobile */
+    .job-actions {
+        justify-content: flex-start;
+        margin-top: 10px;
+        margin-left: 0; /* Reset margin on mobile so it doesn't push off-screen */
+    }
+
+    .job-info {
+        min-width: 100%;
+    }
+
+    /* sidebar full width */
+    .col-lg-2,
+    .col-lg-10 {
+        width: 100%;
+    }
+
+}
+
