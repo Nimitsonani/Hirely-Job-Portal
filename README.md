@@ -4,12 +4,6 @@ A Django-based job portal that focuses on real backend systems like task schedul
 
 ---
 
-## 🚀 Live Demo
-
-https://your-live-link.onrender.com/
-
----
-
 ## 🛠 Tech Stack
 
 ### Backend
