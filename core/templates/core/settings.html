@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/dashboard.css' %}">
+<style>
+    /* ============================= */
+    /* DASHBOARD LAYOUT & SPACING */
+    /* ============================= */
+    .dashboard-section {
+        padding: 120px 0 80px 0; 
+        background-color: #f8f9fa; 
+        min-height: 100vh;
+    }
+
+    /* ============================= */
+    /* FLOATING MENU BUTTON */
+    /* ============================= */
+    .floating-menu-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        width: 50px;
+        height: 50px;
+        background-color: #007bff; 
+        color: #ffffff;
+        border: none;
+        border-radius: 4px; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        cursor: pointer;
+        z-index: 1030; 
+        transition: all 0.3s ease;
+    }
+
+    .floating-menu-btn:hover {
+        background-color: #0056b3;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    /* ============================= */
+    /* OFF-CANVAS SIDEBAR (The Drawer) */
+    /* ============================= */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(17, 24, 39, 0.4);
+        backdrop-filter: blur(3px); 
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .sidebar-drawer {
+        position: fixed;
+        top: 0;
+        left: -320px; 
+        width: 300px;
+        height: 100vh;
+        background: #ffffff;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+        z-index: 1050;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        padding: 30px 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar-drawer.open {
+        left: 0; 
+    }
+
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .sidebar-header h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #111827;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .btn-close-sidebar {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: #6b7280;
+        cursor: pointer;
+        transition: 0.2s;
+        padding: 5px;
+    }
+    .btn-close-sidebar:hover {
+        color: #dc2626; 
+    }
+
+    .sidebar-nav-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; 
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        color: #4b5563;
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+    .sidebar-link i {
+        margin-right: 12px;
+        font-size: 18px;
+        width: 20px;
+        text-align: center;
+        color: #9ca3af;
+        transition: color 0.2s ease;
+    }
+    .sidebar-link:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+    }
+    .sidebar-link:hover i {
+        color: #4b5563;
+    }
+    .sidebar-link.active {
+        background-color: #e0f2fe; 
+        color: #0369a1; 
+        font-weight: 600;
+    }
+    .sidebar-link.active i {
+        color: #0284c7;
+    }
+
+    /* ============================= */
+    /* MAIN CONTENT CARDS & FORMS */
+    /* ============================= */
+    .manage-apps-wrapper {
+        background: #ffffff;
+        padding: 35px 40px;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+    
+    .apps-header {
+        margin-bottom: 25px;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 20px;
+    }
+    .apps-header h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #111827; 
+        margin-bottom: 6px;
+        letter-spacing: -0.3px;
+    }
+    .apps-header p {
+        color: #6b7280; 
+        font-size: 15px;
+        margin: 0;
+    }
+
+    /* Basic Form Styling for Dummy Data */
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #374151;
+        font-size: 14px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 15px;
+        color: #111827;
+        transition: border-color 0.2s ease;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+    .btn-submit {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .btn-submit:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<button id="openSidebarBtn" class="floating-menu-btn" aria-label="Open Settings Menu">
+    <i class="lni lni-menu"></i>
+</button>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="sidebar-drawer" id="sidebarDrawer">
+    <div class="sidebar-header">
+        <h4>Settings</h4>
+        <button class="btn-close-sidebar" id="closeSidebarBtn">
+            <i class="lni lni-close"></i>
+        </button>
+    </div>
+    
+    <div class="sidebar-nav-list">
+        <a href="{% url 'settings-page' %}" class="sidebar-link {% if not change_password %}active{% endif %}">
+            <i class="lni lni-user"></i> Change Username
+        </a>
+        <a href="{% url 'change-password-page' %}" class="sidebar-link {% if change_password %}active{% endif %}">
+            <i class="lni lni-lock"></i> Change Password
+        </a>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <div class="container" style="max-width: 96% !important;">
+        
+        <div class="row">
+            <div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+                
+                {% if change_password %}
+                    <div class="manage-apps-wrapper">
+                        <div class="apps-header">
+                            <h3>Change Password</h3>
+                            <p>Ensure your account is using a long, random password to stay secure.</p>
+                        </div>
+
+                        <form method="POST">
+                            {% csrf_token %}
+
+                            {% if error %}
+                                <div style="color:red; margin-bottom:10px;">
+                                    {{ error }}
+                                </div>
+                            {% endif %}
+
+                            <div class="form-group">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" name="current_password" class="form-control" placeholder="Enter current password">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">New Password</label>
+                                <input type="password" name="new_password" class="form-control" placeholder="Enter new password">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" name="confirm_password" class="form-control" placeholder="Confirm new password">
+                            </div>
+
+                            <button type="submit" class="btn-submit">Update Password</button>
+                        </form>
+                    </div>
+
+                    {% else %}
+                    <div class="manage-apps-wrapper">
+                        <div class="apps-header">
+                            <h3>Change Username</h3>
+                            <p>Update the username associated with your account.</p>
+                        </div>
+
+                        <form method="POST">
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+                                <div style="color:red; margin-bottom:10px;">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+
+                            <div class="form-group">
+                                <label class="form-label">Current Username</label>
+                                <input type="text" class="form-control"
+                                    value="{{ current_username }}"
+                                    disabled style="background-color: #f3f4f6;">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">New Username</label>
+
+                                {% if request.user.user_type == 'candidate' %}
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <small style="color:red;">{{ form.username.errors.0 }}</small>
+                                    {% endif %}
+                                {% else %}
+                                    {{ form.company_username }}
+                                    {% if form.company_username.errors %}
+                                        <small style="color:red;">{{ form.company_username.errors.0 }}</small>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+
+                            <button type="submit" class="btn-submit">Save Username</button>
+                        </form>
+                    </div>
+                    {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% include 'components/footer.html' %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const openBtn = document.getElementById('openSidebarBtn');
+        const closeBtn = document.getElementById('closeSidebarBtn');
+        const overlay = document.getElementById('sidebarOverlay');
+        const drawer = document.getElementById('sidebarDrawer');
+
+        function openSidebar() {
+            overlay.classList.add('show');
+            drawer.classList.add('open');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeSidebar() {
+            overlay.classList.remove('show');
+            drawer.classList.remove('open');
+            document.body.style.overflow = ''; 
+        }
+
+        if(openBtn) openBtn.addEventListener('click', openSidebar);
+        if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if(overlay) overlay.addEventListener('click', closeSidebar);
+    });
+</script>
+{% endblock %}

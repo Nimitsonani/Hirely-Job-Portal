@@ -1,0 +1,559 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+{% block title %}Hirely{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* Fix to exactly match the browse_jobs layout */
+    .single-job {
+        align-items: flex-start !important;
+    }
+
+    .single-job .job-image {
+        flex: 0 0 90px;
+        max-width: 90px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        margin-right: 25px;
+    }
+
+    .single-job .job-image img {
+        width: 100%;
+        height: auto;
+        max-height: 85px;
+        object-fit: contain;
+    }
+    
+    .single-job .job-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .single-job .job-button {
+        position: relative;
+        z-index: 5; 
+    }
+
+    /* BULLETPROOF 5-LINE TRUNCATION */
+    .single-job .job-content .job-desc {
+        display: -webkit-box !important;
+        -webkit-line-clamp: 5 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        margin-bottom: 15px !important; 
+        line-height: 24px !important;
+        max-height: 120px !important; 
+        white-space: normal !important;
+    }
+
+    /* =========================================
+       VIEW ALL JOBS - PROFESSIONAL BUTTON
+       ========================================= */
+    .btn-pro-view {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #007bff;
+        color: #ffffff !important;
+        padding: 16px 45px;
+        font-size: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 4px; /* Professional sharp-rounded corner */
+        border: none;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-pro-view:hover {
+        background-color: #0069d9;
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-pro-view i {
+        margin-left: 10px;
+        font-size: 18px;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-pro-view:hover i {
+        transform: translateX(5px);
+    }
+
+    /* =========================================
+       DUAL APPLY PROCESS SECTION STYLING
+       ========================================= */
+    .apply-process-theme {
+        background-color: #2b4eff;
+        padding: 80px 0;
+    }
+
+    .process-toggle-wrapper {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50px;
+        display: inline-flex;
+        padding: 6px;
+        margin-bottom: 50px;
+    }
+
+    .process-toggle-btn {
+        background: transparent;
+        color: #ffffff;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .process-toggle-btn.active {
+        background: #ffffff;
+        color: #2b4eff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .process-tab-pane {
+        display: none;
+        animation: fadeInTab 0.4s ease forwards;
+    }
+    
+    .process-tab-pane.active {
+        display: flex; 
+    }
+
+    @keyframes fadeInTab {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .process-item-custom {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .process-item-custom .icon-wrapper {
+        flex-shrink: 0;
+        width: 65px; 
+        height: 65px;
+        border: 1px dashed rgba(255, 255, 255, 0.4); 
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.4s ease;
+    }
+
+    .process-item-custom:hover .icon-wrapper {
+        transform: scale(1.08) rotate(5deg);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .process-item-custom .icon-wrapper i {
+        font-size: 22px; 
+        color: #ffffff;
+        margin: 0; 
+    }
+
+    .process-item-custom .content-wrapper h4 {
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        margin-top: 0;
+    }
+
+    .process-item-custom .content-wrapper .divider {
+        width: 40px;
+        height: 1px;
+        background-color: #ffffff;
+        margin-bottom: 15px;
+        opacity: 0.8;
+    }
+
+    .process-item-custom .content-wrapper p {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* =========================================
+       JOB CATEGORY STYLING
+       ========================================= */
+    .single-cat-custom {
+        display: block;
+        background: #ffffff;
+        border: 1px dashed #e5e5e5; 
+        border-radius: 8px;
+        padding: 30px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        margin-bottom: 30px;
+    }
+
+    .single-cat-custom:hover {
+        border-color: #d1d5db; 
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06); 
+        transform: translateY(-4px); 
+    }
+
+    .single-cat-custom .cat-icon-box {
+        width: 64px;
+        height: 64px;
+        background-color: rgba(0, 123, 255, 0.1); 
+        border-radius: 12px; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px auto;
+        transition: all 0.3s ease; 
+    }
+
+    .single-cat-custom:hover .cat-icon-box {
+        background-color: #007bff; 
+    }
+
+    .single-cat-custom .cat-icon-box i {
+        font-size: 24px;
+        color: #007bff;
+        transition: all 0.3s ease;
+    }
+
+    .single-cat-custom:hover .cat-icon-box i {
+        color: #ffffff; 
+    }
+
+    .single-cat-custom h3 {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333333;
+        margin: 0;
+        line-height: 1.4;
+        transition: color 0.3s ease;
+    }
+
+    .single-cat-custom:hover h3 {
+        color: #007bff;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<section class="hero-area">
+    <div class="hero-inner">
+        <div class="container">
+            <div class="row ">
+                <div class="col-lg-6 col-12">
+                    <div class="inner-content">
+                        <div class="hero-text">
+                            <h1 class="wow fadeInUp" data-wow-delay=".3s">Find Your Career <br>to Make a Better Life
+                            </h1>
+                            <p class="wow fadeInUp" data-wow-delay=".5s">Creating a beautiful job website is not
+                                easy <br> always. To make your life easier, we are<br> introducing Jobcamp template.
+                            </p>
+                        </div>
+                        <div class="job-search-wrap-two mt-50 wow fadeInUp" data-wow-delay=".7s">
+                            <div class="job-search-form">
+                                <form action="{% url 'search-jobs' 1 %}" method="GET">
+                                    <div class="single-field-item keyword">
+                                        <label for="keyword">What</label>
+                                        <input id="keyword" placeholder="What jobs you want?" name="keyword"
+                                            type="text">
+                                    </div>
+                                    <div class="single-field-item location">
+                                        <label for="location">Where</label>
+                                        <input id="location" class="input-field input-field-location"
+                                            placeholder="Location" name="location" type="text">
+                                    </div>
+                                    <div class="submit-btn">
+                                        <button class="btn" type="submit">Search</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="trending-keywords mt-30">
+                                <div class="keywords style-two">
+                                    <span class="title">Popular Keywords:</span>
+                                    <ul>
+                                        <li><a href="{% url 'search-jobs' 1 %}?query=Python">Python</a></li>
+                                        <li><a href="{% url 'search-jobs' 1 %}?query=Django">Django</a></li>
+                                        <li><a href="{% url 'search-jobs' 1 %}?query=React">React</a></li>
+                                        <li><a href="{% url 'search-jobs' 1 %}?query=Frontend">Frontend</a></li>
+                                        <li><a href="{% url 'search-jobs' 1 %}?query=Android">Android</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-12">
+                    <div class="hero-video-head wow fadeInRight" data-wow-delay=".5s">
+                        <div class="video-inner">
+                            <img src="{% static 'assets/images/hero/hero-image.png' %}" alt="#">
+                            <a href="https://youtu.be/D4Mc6W4L_2g" class="glightbox hero-video"><i
+                                    class="lni lni-play"></i></a>
+                            <div class="promo-video">
+                                <div class="waves-block">
+                                    <div class="waves wave-1"></div>
+                                    <div class="waves wave-2"></div>
+                                    <div class="waves wave-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="apply-process-theme section">
+    <div class="container">
+        
+        <div class="row">
+            <div class="col-12 text-center wow fadeInUp" data-wow-delay=".2s">
+                <div class="process-toggle-wrapper" id="processToggle">
+                    <button class="process-toggle-btn active" data-target="seekers-tab">For Candidates</button>
+                    <button class="process-toggle-btn" data-target="employers-tab">For Employers</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row process-tab-pane active" id="seekers-tab">
+            <div class="col-lg-4 col-md-4 col-12">
+                <div class="process-item-custom wow fadeInUp" data-wow-delay=".3s">
+                    <div class="icon-wrapper"><i class="fa-regular fa-user"></i></div>
+                    <div class="content-wrapper">
+                        <h4>Register & Profile</h4>
+                        <div class="divider"></div>
+                        <p>Create a detailed professional profile. Highlight your skills and experiences to stand out.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-12">
+                <div class="process-item-custom wow fadeInUp" data-wow-delay=".5s">
+                    <div class="icon-wrapper"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                    <div class="content-wrapper">
+                        <h4>Browse & Apply</h4>
+                        <div class="divider"></div>
+                        <p>Explore thousands of open positions and send an application with just a single click.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-12">
+                <div class="process-item-custom wow fadeInUp" data-wow-delay=".7s">
+                    <div class="icon-wrapper"><i class="fa-regular fa-handshake"></i></div>
+                    <div class="content-wrapper">
+                        <h4>Get Hired</h4>
+                        <div class="divider"></div>
+                        <p>Receive interview requests, accept job offers, and start your new professional chapter.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row process-tab-pane" id="employers-tab">
+            <div class="col-lg-4 col-md-4 col-12">
+                <div class="process-item-custom">
+                    <div class="icon-wrapper"><i class="fa-regular fa-building"></i></div>
+                    <div class="content-wrapper">
+                        <h4>Create Company Profile</h4>
+                        <div class="divider"></div>
+                        <p>Establish your brand presence. Showcase your mission, vision, and unique work culture.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-12">
+                <div class="process-item-custom">
+                    <div class="icon-wrapper"><i class="fa-solid fa-bullhorn"></i></div>
+                    <div class="content-wrapper">
+                        <h4>Post Open Positions</h4>
+                        <div class="divider"></div>
+                        <p>Reach top-tier talent. Describe the ideal candidate and list requirements to find the best fit.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-12">
+                <div class="process-item-custom">
+                    <div class="icon-wrapper"><i class="fa-solid fa-users-viewfinder"></i></div>
+                    <div class="content-wrapper">
+                        <h4>Review & Hire</h4>
+                        <div class="divider"></div>
+                        <p>Manage your talent pipeline, schedule interviews with top candidates, and extend offers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="job-category section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-title">
+                    <span class="wow fadeInDown" data-wow-delay=".2s">Job Category</span>
+                    <h2 class="wow fadeInUp" data-wow-delay=".4s">Choose Your Desire Category</h2>
+                    <p class="wow fadeInUp" data-wow-delay=".6s">There are many variations of passages of Lorem
+                        Ipsum available, but the majority have suffered alteration in some form.</p>
+                </div>
+            </div>
+        </div>
+        <div class="cat-head">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-12">
+                    <a href="{% url 'search-jobs' 1 %}?query=Frontend+Developer" class="single-cat-custom wow fadeInUp" data-wow-delay=".2s">
+                        <div class="cat-icon-box"><i class="fa-solid fa-laptop-code"></i></div>
+                        <h3>Frontend<br> Developer</h3>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <a href="{% url 'search-jobs' 1 %}?query=Backend+Developer" class="single-cat-custom wow fadeInUp" data-wow-delay=".4s">
+                        <div class="cat-icon-box"><i class="fa-solid fa-database"></i></div>
+                        <h3>Backend<br> Developer</h3>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <a href="{% url 'search-jobs' 1 %}?query=UI+Designer" class="single-cat-custom wow fadeInUp" data-wow-delay=".6s">
+                        <div class="cat-icon-box"><i class="fa-solid fa-layer-group"></i></div>
+                        <h3>UI/UX<br> Designer</h3>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <a href="{% url 'search-jobs' 1 %}?query=Data+Scientist" class="single-cat-custom wow fadeInUp" data-wow-delay=".8s">
+                        <div class="cat-icon-box"><i class="fa-solid fa-chart-column"></i></div>
+                        <h3>Data<br> Scientist</h3>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <a href="{% url 'search-jobs' 1 %}?query=DevOps+Engineer" class="single-cat-custom wow fadeInUp" data-wow-delay=".2s">
+                        <div class="cat-icon-box"><i class="fa-solid fa-cloud"></i></div>
+                        <h3>DevOps<br> Engineer</h3>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <a href="{% url 'search-jobs' 1 %}?query=Android+Developer" class="single-cat-custom wow fadeInUp" data-wow-delay=".4s">
+                        <div class="cat-icon-box"><i class="fa-brands fa-android"></i></div>
+                        <h3>Android<br> Developer</h3>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <a href="{% url 'search-jobs' 1 %}?query=Machine+Learning+Engineer" class="single-cat-custom wow fadeInUp" data-wow-delay=".6s">
+                        <div class="cat-icon-box"><i class="fa-solid fa-gears"></i></div>
+                        <h3>Machine Learning<br> Engineer</h3>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <a href="{% url 'search-jobs' 1 %}?query=Cyber+Security+Specialist" class="single-cat-custom wow fadeInUp" data-wow-delay=".8s">
+                        <div class="cat-icon-box"><i class="fa-solid fa-shield"></i></div>
+                        <h3>Cybersecurity<br> Specialist</h3>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="find-job section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-title">
+                    <span class="wow fadeInDown" data-wow-delay=".2s">Hot Jobs</span>
+                    <h2 class="wow fadeInUp" data-wow-delay=".4s">Browse Recent Jobs</h2>
+                    <p class="wow fadeInUp" data-wow-delay=".6s">There are many variations of passages of Lorem
+                        Ipsum available, but the majority have suffered alteration in some form.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="single-head">
+            <div class="row">
+                {% if jobs %}
+                    {% for job in jobs %}
+                    <div class="col-lg-6 col-12">
+                        <div class="single-job wow fadeInUp" data-wow-delay=".3s">
+                            <div class="job-image">
+                                {% if job.company.profile_picture %}
+                                    <img src="{{ job.company.profile_picture.url }}" alt="Company Logo">
+                                {% else %}
+                                    <img src="{% static 'assets/images/default/company_default.png' %}" alt="Default Company Logo">
+                                {% endif %}
+                            </div>
+                            
+                            <div class="job-content">
+                                <h4><a href="{% url 'job-details-page' job.job_id %}">{{ job.title }}</a></h4>
+                                <p class="job-desc" title="{{ job.job_description|striptags }}">{{ job.job_description|striptags }}</p>
+                                <ul>
+                                    <li><i class="lni lni-website"></i> <a href="{{ job.company.website }}" target="_blank">{{ job.company.website|cut:"https://"|cut:"http://"|cut:"www."|cut:"/" }}</a></li>
+                                    <li><i class="lni lni-dollar"></i> ₹{{ job.min_salary }} - ₹{{ job.max_salary }}</li>
+                                    <li><i class="lni lni-map-marker"></i> {{ job.location }}</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="job-button">
+                                <ul>
+                                    <li><a href="{% url 'job-details-page' job.job_id %}">Apply</a></li>
+                                    <li><span>{{ job.get_job_type_display }}</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center" style="padding: 40px 0;">
+                        <h4 style="color: #6c757d;">No jobs posted yet. Check back soon!</h4>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if jobs %}
+        <div class="row mt-5 mb-3">
+            <div class="col-12 text-center">
+                <a href="{% url 'browse-jobs-page' 1 %}" class="btn-pro-view">
+                    View All Jobs <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        
+    </div>
+</section>
+
+{% include 'components/footer.html' %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const toggleBtns = document.querySelectorAll('.process-toggle-btn');
+        const tabPanes = document.querySelectorAll('.process-tab-pane');
+
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                const targetId = this.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+    });
+</script>
+
+{% endblock %}
