@@ -156,3 +156,18 @@ https://your-live-link.onrender.com/
 ### Install dependencies
 ```bash
 pip install -r requirements.txt
+```
+### Start Server
+```bash
+python manage.py runserver
+```
+
+### Start Celery Worker
+```bash
+celery -A Hirely worker -l info --pool=solo
+```
+
+### Start Celery Beat
+```bash
+celery -A Hirely beat -l info
+```
