@@ -1,0 +1,91 @@
+{% load static %}
+<header class="header">
+    <div class="navbar-area">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-12">
+                    <nav class="navbar navbar-expand-lg">
+                        <a class="navbar-brand logo" href="{% url 'home-page' %}">
+                            <img class="logo1" src="{% static 'assets/images/logo/logo.svg' %}" alt="Logo">
+                        </a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="toggler-icon"></span>
+                            <span class="toggler-icon"></span>
+                            <span class="toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
+                            <ul id="nav" class="navbar-nav ml-auto">
+                                <li class="nav-item">
+                                    <a {% if request.resolver_match.url_name == 'home-page' %} class="active"{% endif %} 
+                                    href="{% url 'home-page' %}">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a {% if request.resolver_match.url_name == 'browse-jobs-page' or  request.resolver_match.url_name == 'job-details-page' or  request.resolver_match.url_name == 'search-jobs' %} class="active"{% endif %}
+                                    href="{% url 'browse-jobs-page' 1 %}">Jobs</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a {% if request.resolver_match.url_name == 'browse-companies-page' or request.resolver_match.url_name == 'search-companies' or request.resolver_match.url_name == 'company-public-profile-page'%} class="active"{% endif %} 
+                                    href="{% url 'browse-companies-page' 1 %}">Companies</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a {% if request.resolver_match.url_name == 'browse-candidates-page' or request.resolver_match.url_name == 'search-candidates' or request.resolver_match.url_name == 'candidate-public-profile-page' %} class="active"{% endif %}
+                                    href="{% url 'browse-candidates-page' 1 %}">Candidates</a>
+                                </li>
+
+                                {% if user.is_authenticated %}
+                                {% if user.user_type == 'candidate' %}
+                                <li class="nav-item">
+                                    <a {% if request.resolver_match.url_name == 'dashboard-job-applications' or request.resolver_match.url_name == 'company-dashboard-manage-jobs' or request.resolver_match.url_name == 'company-dashboard-profile' or request.resolver_match.url_name == 'dashboard-page' or request.resolver_match.url_name == 'candidate-dashboard-profile' or request.resolver_match.url_name == 'post-job-page' %} class="active"{% endif %}
+                                    href="{% url 'dashboard-page' %}">Dashboard</a>
+                                </li>
+                                {% elif user.user_type == 'company' %}
+                                <li class="nav-item">
+                                    <a {% if request.resolver_match.url_name == 'dashboard-job-applications' or request.resolver_match.url_name == 'company-dashboard-manage-jobs' or request.resolver_match.url_name == 'company-dashboard-profile' or request.resolver_match.url_name == 'dashboard-page' or request.resolver_match.url_name == 'candidate-dashboard-profile' or request.resolver_match.url_name == 'post-job-page' %} class="active"{% endif %}
+                                    href="{% url 'company-dashboard-manage-jobs' 1 %}">Dashboard</a>                                    
+                                </li>
+                                {% endif %}
+                                {% endif %}
+                                
+                                <li class="nav-item"><a href="{% url 'contact-us-page' %}"
+                                    {% if request.resolver_match.url_name == 'contact-us-page' %} class="active"{% endif %}>Contact </a> </li>
+                                {% if user.is_authenticated %}
+                                <li class="nav-item"><a href="#"
+                                    {% if request.resolver_match.url_name == 'change-password-page' or request.resolver_match.url_name == 'settings-page' or request.resolver_match.url_name == 'notifications-page'%} class="active"{% endif %}>Account</a>
+                                    <ul class="sub-menu">
+                                        <li>{% if user.user_type == 'company' %}<a href="{% url 'company-dashboard-profile' %}">{% else %}<a href="{% url 'candidate-dashboard-profile' %}">{%endif%}Profile</a></li>
+                                        <li><a href="{% url 'notifications-page' 1 %}">Notification</a></li>
+                                        <li><a href="{% url 'settings-page' %}">Settings</a></li>
+                                        <li>
+                                        <li>
+                                            <form action="{% url 'logout' %}" method="POST" class="logout-form">
+                                                {% csrf_token %}
+                                                <button type="submit" class="logout-btn">
+                                                    Logout
+                                                </button>
+                                            </form>
+                                        </li>
+                                </li>
+                            </ul>
+                            </li>
+                            {% endif %}
+                            </ul>
+                        </div>
+                        <!-- navbar collapse -->
+                        {% if not user.is_authenticated %}
+                        <div class="button">
+                            <a href="{% url 'login-page' %}" class="login"><i class="lni lni-lock-alt"></i> Login</a>
+                            <a href="{% url 'register-page' %}" class="btn">Sign Up</a>
+                        </div>
+                        {% endif %}
+                    </nav>
+                    <!-- navbar -->
+                </div>
+            </div>
+            <!-- row -->
+        </div>
+        <!-- container -->
+    </div>
+    <!-- navbar area -->
+</header>

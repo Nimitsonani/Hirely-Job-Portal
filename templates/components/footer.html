@@ -1,0 +1,129 @@
+{% load static %}
+<!-- Start Footer Area -->
+<footer class="footer">
+
+    <!-- Start Middle -->
+    <div class="footer-middle">
+        <div class="container">
+            <div class="row">
+
+                <!-- About -->
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="f-about single-footer">
+                        <div class="logo">
+                            <a href="{% url 'home-page' %}">
+                                <img src="{% static 'assets/images/logo/logo.svg' %}" alt="Hirely Logo">
+                            </a>
+                        </div>
+
+                        <p>
+                            Hirely is a modern job platform helping developers and companies connect faster.
+                            Discover jobs, showcase your skills, and build your career.
+                        </p>
+
+                        <ul class="contact-address">
+                            <li><span>Address:</span> Surat, Gujarat, India</li>
+                            <li><span>Email:</span> support@hirely.com</li>
+                            <li><span>Call:</span> +91 98765 43210</li>
+                        </ul>
+
+                        <div class="footer-social">
+                            <ul>
+                                <li><a href="#"><i class="lni lni-facebook-original"></i></a></li>
+                                <li><a href="#"><i class="lni lni-twitter-original"></i></a></li>
+                                <li><a href="#"><i class="lni lni-linkedin-original"></i></a></li>
+                                <li><a href="#"><i class="lni lni-github-original"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div class="col-lg-8 col-12">
+                    <div class="row">
+
+                        <!-- Candidates -->
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="single-footer f-link">
+                                <h3>For Candidates</h3>
+                                <ul>
+                                    <li><a href="{% url 'browse-jobs-page' 1 %}">Browse Jobs</a></li>
+                                    <li><a href="{% url 'register-page' %}">Create Profile</a></li>
+                                    <li><a href="#">Saved Jobs</a></li>
+                                    {% if user.is_authenticated and user.user_type == 'candidate' %}
+                                    <li><a href="{% url 'dashboard-page' %}">Applications</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Employers -->
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="single-footer f-link">
+                                <h3>For Employers</h3>
+                                <ul>
+                                    <li><a href="{% url 'post-job-page' %}">Post a Job</a></li>
+                                    <li><a href="{% url 'browse-candidates-page' 1 %}">Browse Candidates</a></li>
+                                    <li><a href="{% url 'company-dashboard-manage-jobs' 1 %}">Company Dashboard</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Newsletter -->
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="single-footer newsletter">
+                                <h3>Stay Updated</h3>
+                                <p>Get latest job updates and hiring tips directly in your inbox.</p>
+
+                                <form action="#" method="post" class="newsletter-inner">
+                                    <input name="email" placeholder="Enter your email"
+                                        class="common-input" required type="email">
+
+                                    <div class="button">
+                                        <button class="btn">Subscribe</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="inner">
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <div class="left">
+                            <p>© 2026 Hirely. All rights reserved.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <div class="right">
+                            <ul>
+                                <li><a href="#">Terms</a></li>
+                                <li><a href="#">Privacy</a></li>
+                                <li><a href="#">FAQ</a></li>
+                                <li><a href="{% url 'contact-us-page' %}">Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</footer>
+
+<!-- Scroll Top -->
+<a href="#" class="scroll-top btn-hover">
+    <i class="lni lni-chevron-up"></i>
+</a>
