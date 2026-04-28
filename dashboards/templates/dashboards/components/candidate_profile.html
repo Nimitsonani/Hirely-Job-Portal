@@ -1,0 +1,506 @@
+<style>
+    /* Professional Profile Wrapper */
+    .pro-profile-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+        overflow: hidden; 
+        border: 1px solid #e2e8f0;
+        position: relative;
+    }
+    
+    /* Cover Banner & Header */
+    .pro-cover {
+        height: 140px;
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        position: relative;
+    }
+    .pro-header-content {
+        padding: 0 30px 30px 30px;
+        position: relative;
+    }
+    
+    /* Overlapping Avatar */
+    .pro-avatar-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: -60px;
+        margin-bottom: 20px;
+    }
+    .pro-avatar {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        background-color: #ffffff;
+        border: 4px solid #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .pro-avatar i {
+        font-size: 55px;
+        color: #94a3b8;
+    }
+    .pro-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer; /* Indicates it is clickable */
+        transition: opacity 0.2s ease;
+    }
+    .pro-avatar img:hover {
+        opacity: 0.9;
+    }
+    
+    /* Top Action Buttons */
+    .pro-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+    .btn-edit {
+        background: #3b82f6;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        border: 1px solid #3b82f6;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-edit:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff;
+    }
+    .btn-resume {
+        background: #f1f5f9;
+        color: #0f172a;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        border: 1px solid #cbd5e1;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-resume:hover {
+        background: #e2e8f0;
+        color: #1e3a8a;
+        border-color: #94a3b8;
+    }
+    .btn-resume.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    /* Identity Section */
+    .pro-title-wrapper {
+        margin-bottom: 25px;
+    }
+    .pro-name {
+        font-size: 28px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .badge-level {
+        background: #d1fae5;
+        color: #059669;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid #a7f3d0;
+    }
+    
+    /* Job Title Style */
+    .pro-job-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #3b82f6; 
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .pro-username {
+        font-size: 16px;
+        color: #64748b;
+        font-weight: 500;
+        margin-bottom: 12px;
+    }
+    .pro-meta-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        color: #64748b;
+        font-size: 14px;
+    }
+    .pro-meta-list span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .pro-meta-list i {
+        color: #94a3b8;
+    }
+
+    /* Body & Grid Layout */
+    .pro-body {
+        padding: 30px;
+        border-top: 1px solid #f1f5f9;
+        background: #fafaf9;
+    }
+    
+    /* Content Blocks */
+    .content-block {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 10px;
+        border: 1px solid #f1f5f9;
+        margin-bottom: 25px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .block-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .block-text {
+        font-size: 15px;
+        color: #475569;
+        line-height: 1.7;
+        white-space: pre-wrap;
+    }
+
+    /* Skills Pill Design */
+    .skill-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .skill-pill {
+        background: #f8fafc;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    /* Education List Styles */
+    .edu-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .edu-list li {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed #e2e8f0;
+    }
+    .edu-list li:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    .edu-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+    .edu-meta {
+        font-size: 14px;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+    .edu-meta i {
+        color: #94a3b8;
+        font-size: 16px;
+    }
+
+    /* Contact List */
+    .contact-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .contact-list li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #334155;
+    }
+    .contact-icon {
+        width: 32px;
+        height: 32px;
+        background: #f1f5f9;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+    }
+    
+    .content-block:last-child { margin-bottom: 0; }
+    .contact-list li:last-child { margin-bottom: 0; }
+
+    /* ================================== */
+    /* Lightbox Styles */
+    /* ================================== */
+    .img-lightbox {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.9); /* Dark slate overlay */
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .img-lightbox.active {
+        display: flex;
+        opacity: 1;
+    }
+    .img-lightbox img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+    .img-lightbox.active img {
+        transform: scale(1);
+    }
+    .lightbox-close {
+        position: absolute;
+        top: 25px;
+        right: 40px;
+        color: #ffffff;
+        font-size: 40px;
+        font-weight: 300;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+    .lightbox-close:hover {
+        color: #94a3b8;
+    }
+</style>
+
+<div class="pro-profile-card">
+    
+    <div class="pro-cover"></div>
+    
+    <div class="pro-header-content">
+        <div class="pro-avatar-wrapper">
+            <div class="pro-avatar">
+                {% if user.candidate.profile_picture %}
+                    <img src="{{ user.candidate.profile_picture.url }}" alt="{{ user.first_name }}'s Profile Picture" id="profilePicTrigger">
+                {% else %}
+                    <i class="lni lni-user"></i>
+                {% endif %}
+            </div>
+            
+            <div class="pro-actions">
+                <a href="{% url 'edit-candidate-profile-page' %}" class="btn-edit">
+                    <i class="lni lni-pencil"></i> Edit Profile
+                </a>
+                
+                {% if user.candidate.resume %}
+                    <a href="{{ user.candidate.resume.url }}" class="btn-resume" target="_blank">
+                        <i class="lni lni-download"></i> Resume / CV
+                    </a>
+                {% else %}
+                    <a href="#" class="btn-resume disabled">
+                        <i class="lni lni-download"></i> No Resume
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="pro-title-wrapper">
+            <h2 class="pro-name">
+                {{ user.first_name|default:user.username }} {{ user.last_name }}
+                {% if user.candidate.experience_level %}
+                    <span class="badge-level">{{ user.candidate.get_experience_level_display }}</span>
+                {% endif %}
+            </h2>
+            
+            {% if user.candidate.job_title %}
+                <div class="pro-job-title">
+                    <i class="lni lni-briefcase"></i> {{ user.candidate.job_title }}
+                </div>
+            {% endif %}
+
+            <div class="pro-username">@{{ user.candidate.username }}</div>
+            
+            <div class="pro-meta-list">
+                {% if user.candidate.location %}
+                    <span><i class="lni lni-map-marker"></i> {{ user.candidate.location }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="pro-body">
+        <div class="row">
+            
+            <div class="col-lg-8 col-12">
+                <div class="content-block">
+                    <h3 class="block-title">About Me</h3>
+                    <div class="block-text">{{ user.candidate.bio|default:"No bio provided yet."|linebreaksbr }}</div>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="block-title">Experience</h3>
+                    <div class="block-text">{{ user.candidate.experience_description|default:"No experience details provided yet."|linebreaksbr }}</div>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="block-title">Projects</h3>
+                    <div class="block-text">{{ user.candidate.projects|default:"No projects listed yet."|linebreaksbr }}</div>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="block-title">Education</h3>
+                    {% if user.candidate.degree or user.candidate.college_name or user.candidate.university_name or user.candidate.school_name %}
+                        <ul class="edu-list">
+                            <li>
+                                {% if user.candidate.degree or user.candidate.field_of_study %}
+                                    <div class="edu-title">
+                                        {{ user.candidate.degree }}{% if user.candidate.degree and user.candidate.field_of_study %} in {% endif %}{{ user.candidate.field_of_study }}
+                                    </div>
+                                {% endif %}
+                                
+                                {% if user.candidate.university_name %}
+                                    <div class="edu-meta">
+                                        <i class="lni lni-library"></i> University: {{ user.candidate.university_name }}
+                                    </div>
+                                {% endif %}
+
+                                {% if user.candidate.college_name %}
+                                    <div class="edu-meta">
+                                        <i class="lni lni-graduation"></i> College: {{ user.candidate.college_name }}
+                                    </div>
+                                {% endif %}
+
+                                {% if user.candidate.school_name %}
+                                    <div class="edu-meta">
+                                        <i class="lni lni-bookmark"></i> School: {{ user.candidate.school_name }}
+                                    </div>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    {% else %}
+                        <div class="block-text">No education details provided yet.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-12">
+                <div class="content-block">
+                    <h3 class="block-title">Top Skills</h3>
+                    <div class="skill-wrapper">
+                        {% for skill in skills_list %}
+                            <span class="skill-pill">{{ skill }}</span>
+                        {% empty %}
+                            <span class="skill-pill">No skills listed</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="block-title">Contact Information</h3>
+                    <ul class="contact-list">
+                        <li>
+                            <div class="contact-icon"><i class="lni lni-envelope"></i></div>
+                            {{ user.email }}
+                        </li>
+                        {% if user.phone_no %}
+                        <li>
+                            <div class="contact-icon"><i class="lni lni-phone"></i></div>
+                            {{ user.phone_no }}
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div class="img-lightbox" id="imageLightbox">
+    <span class="lightbox-close" id="lightboxCloseBtn">&times;</span>
+    <img src="" alt="Full Resolution Profile" id="lightboxImageSrc">
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const triggerImg = document.getElementById('profilePicTrigger');
+        const lightbox = document.getElementById('imageLightbox');
+        const lightboxImg = document.getElementById('lightboxImageSrc');
+        const closeBtn = document.getElementById('lightboxCloseBtn');
+
+        // Only run if the user has a profile picture
+        if (triggerImg) {
+            // Open lightbox
+            triggerImg.addEventListener('click', function() {
+                lightboxImg.src = this.src; // Copy source from avatar to modal
+                lightbox.classList.add('active');
+            });
+
+            // Close lightbox via button
+            closeBtn.addEventListener('click', function() {
+                lightbox.classList.remove('active');
+            });
+
+            // Close lightbox by clicking anywhere on the dark background
+            lightbox.addEventListener('click', function(e) {
+                if (e.target !== lightboxImg) {
+                    lightbox.classList.remove('active');
+                }
+            });
+            
+            // Close lightbox using Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape" && lightbox.classList.contains('active')) {
+                    lightbox.classList.remove('active');
+                }
+            });
+        }
+    });
+</script>

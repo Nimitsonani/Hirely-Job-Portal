@@ -1,0 +1,86 @@
+<div class="job-items">
+
+    <!-- HEADER -->
+    <div class="job-header">
+        <h2>Manage Jobs</h2>
+        <p>Total Jobs: {{ total_jobs }}</p>
+    </div>
+
+    {% for job in jobs %}
+    <div class="job-card">
+        
+        <a href="{% url 'dashboard-job-applications' job.job_id %}" class="card-overlay-link" aria-label="View {{ job.title }}"></a>
+
+        <div class="job-info">
+            <h3 title="{{ job.title }}">{{ job.title }}</h3>
+            <p class="meta">
+                {{ job.get_job_type_display }} 
+                • ₹{{ job.min_salary }} - ₹{{ job.max_salary }}
+            </p>
+        </div>
+
+        <div class="job-status">
+            <span class="dot {% if job.status == 'live' %}live{% else %}closed{% endif %}"></span>
+            {{ job.get_status_display }}
+        </div>
+
+        <div class="job-col">
+            <span class="label">Created</span>
+            <span>{{ job.created_at|date:"d M Y" }}</span>
+        </div>
+
+        <div class="job-col">
+            <span class="label">Deadline</span>
+            <span>{{ job.application_deadline|date:"d M Y" }}</span>
+        </div>
+
+        <div class="job-col">
+            <span class="label">Ends</span>
+            <span>{{ job.terminate_at|date:"d M Y" }}</span>
+        </div>
+
+        <div class="job-col">
+            <span class="label">Candidates</span>
+            <span>{{ job.application_set.count }}</span>
+        </div>
+
+        <div class="job-actions">
+            <a href="{% url 'edit-job-page' job.job_id %}" class="edit-icon-btn" title="Edit Job">
+                <span class="pencil-icon">&#9998;</span>
+            </a>
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+
+<!-- Pagination (UNCHANGED) -->
+<div class="pagination-wrapper">
+    <ul class="pagination-list">
+
+        {% if page_no > 1 %}
+        <li>
+            <a href="{% url 'company-dashboard-manage-jobs' page_no|add:'-1' %}">
+                ←
+            </a>
+        </li>
+        {% endif %}
+
+        {% for i in page_range %}
+        <li {% if page_no == i %}class="active"{% endif %}>
+            <a href="{% url 'company-dashboard-manage-jobs' i %}">{{ i }}</a>
+        </li>
+        {% endfor %}
+
+        {% if page_no < no_of_pages %}
+        <li>
+            <a href="{% url 'company-dashboard-manage-jobs' page_no|add:'1' %}">
+                →
+            </a>
+        </li>
+        {% endif %}
+
+    </ul>
+</div>

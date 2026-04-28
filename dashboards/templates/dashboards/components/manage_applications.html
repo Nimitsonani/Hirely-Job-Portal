@@ -1,0 +1,62 @@
+<div class="manage-apps-wrapper">
+    
+    <div class="apps-header">
+        <h3>Manage Applications</h3>
+        <p>Total Applications: {{ all_applications|length }}</p>
+    </div>
+
+    <div class="application-list">
+        {% for application in all_applications %}
+        <div class="app-card">
+            <div class="row align-items-center">
+                <div class="col-lg-3 col-md-4 col-12">
+                    <h4 class="app-title">{{application.job.title}}</h4>
+                    <p class="app-meta">{{application.job.company.company_display_name}} • {{application.job.job_type}}</p>
+                </div>
+                
+                <div class="col-lg-2 col-md-2 col-12">
+                    {% if application.status == 'applied' %}
+                        <span class="status-badge status-applied">Applied</span>
+                    {% elif application.status == 'shortlisted' %}
+                        <span class="status-badge status-shortlisted">ShortListed</span>
+                    {% elif application.status == 'rejected' %}
+                        <span class="status-badge status-rejected">Rejected</span>
+                    {% elif application.status == 'interview_scheduled' %}
+                        <span class="status-badge status-interview-scheduled">Interview Scheduled</span>
+                    {% elif application.status == 'interviewed' %}
+                        <span class="status-badge status-interviewed">Interviewed</span>
+                    {% elif application.status == 'offered' %}
+                        <span class="status-badge status-offered">Offered</span>
+                    {% else %}
+                        <span class="status-badge status-applied">{{application.status|title}}</span>
+                    {% endif %}
+                </div>
+
+                <div class="col-lg-2 col-md-2 col-12 text-center">
+                    <span class="data-label">Applied</span>
+                    <span class="data-value">{{application.applied_at|date:'F d, Y'}}</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-12 text-center">
+                    <span class="data-label">Location</span>
+                    <span class="data-value">{{application.job.location}}</span>
+                </div>
+                <div class="col-lg-2 col-md-1 col-12 text-center">
+                    <span class="data-label">Expected LPA</span>
+                    <span class="data-value">₹{{application.job.min_salary}}-₹{{application.job.max_salary}}</span>
+                </div>
+                <div class="col-lg-1 col-md-1 col-12 text-end">
+                    <a href="#" class="action-btn" title="View Application">
+                        <i class="lni lni-eye"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        {% empty %}
+        <div class="app-card text-center py-4">
+            <p class="text-muted mb-0">You haven't applied to any jobs yet.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>

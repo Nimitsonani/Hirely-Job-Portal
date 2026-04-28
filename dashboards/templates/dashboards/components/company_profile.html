@@ -1,0 +1,299 @@
+<style>
+    /* Corporate Profile Wrapper */
+    .company-profile-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+        overflow: hidden; 
+        border: 1px solid #e2e8f0;
+    }
+    
+    /* Corporate Cover Banner */
+    .company-cover {
+        height: 160px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+        position: relative;
+    }
+    .company-header-content {
+        padding: 0 30px 30px 30px;
+        position: relative;
+    }
+    
+    /* Overlapping Company Logo */
+    .company-logo-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: -70px;
+        margin-bottom: 20px;
+    }
+    .company-logo {
+        width: 140px;
+        height: 140px;
+        border-radius: 16px; 
+        background-color: #ffffff;
+        border: 4px solid #ffffff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .company-logo i {
+        font-size: 60px;
+        color: #94a3b8;
+    }
+    
+    /* FIXED: Ensures logos of any size fit perfectly without cropping */
+    .company-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Changed from cover to contain */
+        padding: 8px; /* Adds breathing room around the logo */
+        background-color: #ffffff; /* Ensures transparent PNGs look good */
+    }
+
+    /* Top Action Buttons Wrapper */
+    .company-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+    
+    /* Top Action Button - Website */
+    .btn-website {
+        background: #1e3a8a;
+        color: #ffffff;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 4px rgba(30, 58, 138, 0.2);
+    }
+    .btn-website:hover {
+        background: #172554;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    /* Top Action Button - Edit */
+    .btn-edit {
+        background: #3b82f6;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        border: 1px solid #3b82f6;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-edit:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff;
+    }
+
+    /* Identity Section */
+    .company-title-wrapper {
+        margin-bottom: 25px;
+    }
+    .company-name {
+        font-size: 30px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .badge-verified {
+        color: #10b981;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+    }
+    .company-username {
+        font-size: 16px;
+        color: #64748b;
+        font-weight: 500;
+        margin-bottom: 12px;
+    }
+
+    /* Body & Grid Layout */
+    .company-body {
+        padding: 30px;
+        border-top: 1px solid #f1f5f9;
+        background: #fafaf9;
+    }
+    
+    /* Content Blocks */
+    .content-block {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 10px;
+        border: 1px solid #f1f5f9;
+        margin-bottom: 25px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .block-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .block-text {
+        font-size: 15px;
+        color: #475569;
+        line-height: 1.7;
+        white-space: pre-wrap;
+    }
+
+    /* Info List (Right Column) */
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .info-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #334155;
+    }
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1e3a8a;
+        flex-shrink: 0;
+    }
+    .info-content {
+        display: flex;
+        flex-direction: column;
+    }
+    .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+    .info-value {
+        font-weight: 500;
+        color: #0f172a;
+    }
+    .info-value a {
+        color: #3b82f6;
+        text-decoration: none;
+    }
+    .info-value a:hover {
+        text-decoration: underline;
+    }
+    
+    .content-block:last-child { margin-bottom: 0; }
+    .info-list li:last-child { margin-bottom: 0; }
+</style>
+
+<div class="company-profile-card">
+    
+    <div class="company-cover"></div>
+    
+    <div class="company-header-content">
+        <div class="company-logo-wrapper">
+            <div class="company-logo">
+                {% if user.company.profile_picture %}
+                    <img src="{{ user.company.profile_picture.url }}" alt="{{ user.company.company_display_name }} Logo">
+                {% else %}
+                    <i class="lni lni-apartment"></i>
+                {% endif %}
+            </div>
+            
+            <div class="company-actions">
+                <a href="{% url 'edit-company-profile-page' %}" class="btn-edit">
+                    <i class="lni lni-pencil"></i> Edit Profile
+                </a>
+                <a href="{{user.company.website}}" target="_blank" rel="noopener noreferrer" class="btn-website">
+                    <i class="lni lni-world"></i> Visit Website
+                </a>
+            </div>
+        </div>
+        
+        <div class="company-title-wrapper">
+            <h2 class="company-name">
+                {{user.company.company_display_name}}
+                {% if user.company.is_verified %}
+                <span class="badge-verified" title="Verified Company"><i class="lni lni-checkmark-circle"></i></span>
+                {% endif %}
+            </h2>
+            <div class="company-username">@{{user.company.company_username}}</div>
+        </div>
+    </div>
+
+    <div class="company-body">
+        <div class="row">
+            
+            <div class="col-lg-8 col-12">
+                <div class="content-block">
+                    <h3 class="block-title">About the Company</h3>
+                    <div class="block-text">{{user.company.description}}</div>
+                </div> 
+            </div>
+
+            <div class="col-lg-4 col-12">
+                <div class="content-block">
+                    <h3 class="block-title">Company Details</h3>
+                    <ul class="info-list">
+                        <li>
+                            <div class="info-icon"><i class="lni lni-map-marker"></i></div>
+                            <div class="info-content">
+                                <span class="info-label">Headquarters</span>
+                                <span class="info-value">{{user.company.location}}</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="info-icon"><i class="lni lni-world"></i></div>
+                            <div class="info-content">
+                                <span class="info-label">Website</span>
+                                <span class="info-value"><a href="{{user.company.website}}" target="_blank" rel="noopener noreferrer">{{user.company.website|cut:"https"|cut:"http"|cut:"/"|cut:":"}}</a></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="info-icon"><i class="lni lni-envelope"></i></div>
+                            <div class="info-content">
+                                <span class="info-label">Contact Email</span>
+                                <span class="info-value"><a href="mailto:{{user.company.contact_email}}">{{user.company.contact_email}}</a></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="info-icon"><i class="lni lni-phone"></i></div>
+                            <div class="info-content">
+                                <span class="info-label">Contact Phone</span>
+                                <span class="info-value">{{user.company.contact_mobile_no}}</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

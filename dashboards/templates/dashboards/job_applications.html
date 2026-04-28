@@ -1,0 +1,688 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Job Applications{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/job_applications.css' %}">
+{% endblock %}
+
+{% block body %}
+
+<div class="manage-jobs section">
+    <div class="container full-width-container">
+
+        <div class="job-items">
+
+            <div class="application-header">
+                <h2>{{ job.title }}</h2>
+                <div class="application-meta">
+                     <span class="dot {% if job.status == 'live' %}live{% else %}closed{% endif %}"></span>
+                     {{job.get_status_display}} • {{ total_applicants }} Applications
+                </div>
+            </div>
+
+            <div class="app-tabs">
+                <div class="app-tab active" id="tab-all" onclick="switchTab('all')">All</div>
+                <div class="app-tab" id="tab-pending" onclick="switchTab('pending')">Pending</div>
+                <div class="app-tab" id="tab-shortlisted" onclick="switchTab('shortlisted')">Shortlisted</div>
+                <div class="app-tab" id="tab-interview" onclick="switchTab('interview')">Interview Scheduled</div>
+                <div class="app-tab" id="tab-interviewed" onclick="switchTab('interviewed')">Interviewed</div>
+                <div class="app-tab" id="tab-offered" onclick="switchTab('offered')">Offered</div>
+                <div class="app-tab" id="tab-rejected" onclick="switchTab('rejected')">Rejected</div>
+            </div>
+            
+            <div id="content-all" class="tab-content active">
+                {% if all_applications %}
+                <div class="bulk-action-bar">
+                    <button type="button" class="action-btn bulk-reject-btn" 
+                            data-url="{% url 'reject-all' 'applied' job.job_id %}?tab=all" 
+                            onclick="openBulkRejectModal(this.getAttribute('data-url'), 'Pending')">
+                        Reject All Pending
+                    </button>
+                </div>
+                {% endif %}
+
+                {% for applicant in all_applications %}
+                <div class="application-card">
+                    <a href="{% url 'candidate-public-profile-page' applicant.candidate.username %}" class="card-overlay-link"></a>
+                    
+                    <div class="candidate-avatar">
+                        {% if applicant.candidate.profile_picture %}
+                            <img src="{{ applicant.candidate.profile_picture.url }}" alt="{{ applicant.candidate.user.first_name }}">
+                        {% else %}
+                            <i class="lni lni-user"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="candidate-info">
+                        <h4>{{applicant.candidate.user.first_name}} {{applicant.candidate.user.last_name}}</h4>
+                        {% if applicant.candidate.job_title %}
+                        <div class="candidate-job-title">
+                            <i class="lni lni-briefcase"></i> {{ applicant.candidate.job_title }}
+                        </div>
+                        {% endif %}
+                        <div class="candidate-meta">Applied on {{ applicant.applied_at|date:'F j, Y' }}</div>
+                    </div>
+                    
+                    {% if applicant.status == 'applied' %}
+                    <div class="status-badge status-pending">Pending</div>
+                    {% elif applicant.status == 'shortlisted' %}
+                    <div class="status-badge status-shortlisted">Shortlisted</div>
+                    {% elif applicant.status == 'interview_scheduled' %}
+                    <div class="status-badge status-interview-scheduled">Interview Scheduled</div>
+                    {% elif applicant.status == 'interviewed' %}
+                    <div class="status-badge status-interviewed">Interviewed</div>
+                    {% elif applicant.status == 'offered' %}
+                    <div class="status-badge status-offered">Offered</div>
+                    {% elif applicant.status == 'rejected' %}
+                    <div class="status-badge status-rejected">Rejected</div>
+                    {% endif %}
+                    
+                    <div class="application-actions">
+                        {% if applicant.status == 'applied' %}
+                            <form method="POST">{% csrf_token %}
+                                <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                                <input type="hidden" name="updated_status" value="shortlisted">
+                                <button class="action-btn">Shortlist</button>
+                            </form>
+                            <button type="button" class="action-btn" onclick="openInterviewModal('{{applicant.application_id}}')">Interview</button>
+                            <form method="POST">{% csrf_token %}
+                                <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                                <input type="hidden" name="updated_status" value="offered">
+                                <button class="action-btn">Offer</button>
+                            </form>
+                            <button type="button" class="action-btn action-reject" onclick="openRejectModal('{{applicant.application_id}}')">Reject</button>
+
+                        {% elif applicant.status == 'shortlisted' %}
+                            <button type="button" class="action-btn" onclick="openInterviewModal('{{applicant.application_id}}')">Interview</button>
+                            <form method="POST">{% csrf_token %}
+                                <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                                <input type="hidden" name="updated_status" value="offered">
+                                <button class="action-btn">Offer</button>
+                            </form>
+                            <button type="button" class="action-btn action-reject" onclick="openRejectModal('{{applicant.application_id}}')">Reject</button>
+
+                        {% elif applicant.status == 'interview_scheduled' %}
+                            <form method="POST">{% csrf_token %}
+                                <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                                <input type="hidden" name="updated_status" value="interviewed">
+                                <button class="action-btn">Mark Interviewed</button>
+                            </form>
+                            <form method="POST">{% csrf_token %}
+                                <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                                <input type="hidden" name="updated_status" value="offered">
+                                <button class="action-btn">Offer</button>
+                            </form>
+                            <button type="button" class="action-btn action-reject" onclick="openRejectModal('{{applicant.application_id}}')">Reject</button>
+
+                        {% elif applicant.status == 'interviewed' %}
+                            <form method="POST">{% csrf_token %}
+                                <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                                <input type="hidden" name="updated_status" value="offered">
+                                <button class="action-btn">Offer</button>
+                            </form>
+                            <button type="button" class="action-btn action-reject" onclick="openRejectModal('{{applicant.application_id}}')">Reject</button>
+                        {% endif %}
+                        <a href="{{ applicant.candidate.resume.url }}" class="download-btn" title="Download Resume">
+                            <i class="lni lni-download"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="padding: 20px; color: #666;">No applications found.</p>
+                {% endfor %}
+            </div>
+
+
+            <div id="content-pending" class="tab-content">
+                {% if pending_applications %}
+                <div class="bulk-action-bar">
+                    <button type="button" class="action-btn bulk-reject-btn" 
+                            data-url="{% url 'reject-all' 'applied' job.job_id %}?tab=pending" 
+                            onclick="openBulkRejectModal(this.getAttribute('data-url'), 'Pending')">
+                        Reject All Pending
+                    </button>
+                </div>
+                {% endif %}
+
+                {% for applicant in pending_applications %}
+                <div class="application-card">
+                    <a href="#" class="card-overlay-link"></a>
+                    
+                    <div class="candidate-avatar">
+                        {% if applicant.candidate.profile_picture %}
+                            <img src="{{ applicant.candidate.profile_picture.url }}" alt="{{ applicant.candidate.user.first_name }}">
+                        {% else %}
+                            <i class="lni lni-user"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="candidate-info">
+                        <h4>{{applicant.candidate.user.first_name}} {{applicant.candidate.user.last_name}}</h4>
+                        {% if applicant.candidate.job_title %}
+                        <div class="candidate-job-title">
+                            <i class="lni lni-briefcase"></i> {{ applicant.candidate.job_title }}
+                        </div>
+                        {% endif %}
+                        <div class="candidate-meta">Applied on {{ applicant.applied_at|date:'F j, Y' }}</div>
+                    </div>
+                    
+                    <div class="status-badge status-pending">Pending</div>
+                    
+                    <div class="application-actions">
+                        <form method="POST">{% csrf_token %}
+                            <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                            <input type="hidden" name="updated_status" value="shortlisted">
+                            <button class="action-btn">Shortlist</button>
+                        </form>
+                        <button type="button" class="action-btn" onclick="openInterviewModal('{{applicant.application_id}}')">Interview</button>
+                        <form method="POST">{% csrf_token %}
+                            <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                            <input type="hidden" name="updated_status" value="offered">
+                            <button class="action-btn">Offer</button>
+                        </form>
+                        <button type="button" class="action-btn action-reject" onclick="openRejectModal('{{applicant.application_id}}')">Reject</button>
+                        <a href="{{ applicant.candidate.resume.url }}" class="download-btn" title="Download Resume">
+                            <i class="lni lni-download"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="padding: 20px; color: #666;">No pending applications found.</p>
+                {% endfor %}
+            </div>
+
+
+            <div id="content-shortlisted" class="tab-content">
+                {% if shortlisted_applications %}
+                <div class="bulk-action-bar">
+                    <button type="button" class="action-btn bulk-reject-btn" 
+                            data-url="{% url 'reject-all' 'shortlisted' job.job_id %}?tab=shortlisted" 
+                            onclick="openBulkRejectModal(this.getAttribute('data-url'), 'Remaining Shortlisted')">
+                        Reject All Remaining Shortlisted
+                    </button>
+                </div>
+                {% endif %}
+
+                {% for applicant in shortlisted_applications %}
+                <div class="application-card">
+                    <a href="#" class="card-overlay-link"></a>
+                    
+                    <div class="candidate-avatar">
+                        {% if applicant.candidate.profile_picture %}
+                            <img src="{{ applicant.candidate.profile_picture.url }}" alt="{{ applicant.candidate.user.first_name }}">
+                        {% else %}
+                            <i class="lni lni-user"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="candidate-info">
+                        <h4>{{applicant.candidate.user.first_name}} {{applicant.candidate.user.last_name}}</h4>
+                        {% if applicant.candidate.job_title %}
+                        <div class="candidate-job-title">
+                            <i class="lni lni-briefcase"></i> {{ applicant.candidate.job_title }}
+                        </div>
+                        {% endif %}
+                        <div class="candidate-meta">Applied on {{ applicant.applied_at|date:'F j, Y' }}</div>
+                    </div>
+                    
+                    <div class="status-badge status-shortlisted">Shortlisted</div>
+                    
+                    <div class="application-actions">
+                        <button type="button" class="action-btn" onclick="openInterviewModal('{{applicant.application_id}}')">Interview</button>
+                        <form method="POST">{% csrf_token %}
+                            <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                            <input type="hidden" name="updated_status" value="offered">
+                            <button class="action-btn">Offer</button>
+                        </form>
+                        <button type="button" class="action-btn action-reject" onclick="openRejectModal('{{applicant.application_id}}')">Reject</button>
+                        <a href="{{ applicant.candidate.resume.url }}" class="download-btn" title="Download Resume">
+                            <i class="lni lni-download"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="padding: 20px; color: #666;">No shortlisted applications found.</p>
+                {% endfor %}
+            </div>
+
+
+            <div id="content-interview" class="tab-content">
+                {% if interview_scheduled_applications %}
+                <div class="bulk-action-bar">
+                    <button type="button" class="action-btn bulk-reject-btn" 
+                            data-url="{% url 'reject-all' 'interview_scheduled' job.job_id %}?tab=interview" 
+                            onclick="openBulkRejectModal(this.getAttribute('data-url'), 'Scheduled')">
+                        Reject All Scheduled
+                    </button>
+                </div>
+                {% endif %}
+
+                {% for applicant in interview_scheduled_applications %}
+                <div class="application-card">
+                    <a href="#" class="card-overlay-link"></a>
+                    
+                    <div class="candidate-avatar">
+                        {% if applicant.candidate.profile_picture %}
+                            <img src="{{ applicant.candidate.profile_picture.url }}" alt="{{ applicant.candidate.user.first_name }}">
+                        {% else %}
+                            <i class="lni lni-user"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="candidate-info">
+                        <h4>{{applicant.candidate.user.first_name}} {{applicant.candidate.user.last_name}}</h4>
+                        {% if applicant.candidate.job_title %}
+                        <div class="candidate-job-title">
+                            <i class="lni lni-briefcase"></i> {{ applicant.candidate.job_title }}
+                        </div>
+                        {% endif %}
+                        <div class="candidate-meta">Applied on {{ applicant.applied_at|date:'F j, Y' }}</div>
+                    </div>
+                    
+                    <div class="status-badge status-interview-scheduled">Interview Scheduled</div>
+                    
+                    <div class="application-actions">
+                        <form method="POST">{% csrf_token %}
+                            <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                            <input type="hidden" name="updated_status" value="interviewed">
+                            <button class="action-btn">Mark Interviewed</button>
+                        </form>
+                        <form method="POST">{% csrf_token %}
+                            <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                            <input type="hidden" name="updated_status" value="offered">
+                            <button class="action-btn">Offer</button>
+                        </form>
+                        <button type="button" class="action-btn action-reject" onclick="openRejectModal('{{applicant.application_id}}')">Reject</button>
+                        <a href="{{ applicant.candidate.resume.url }}" class="download-btn" title="Download Resume">
+                            <i class="lni lni-download"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="padding: 20px; color: #666;">No applications currently scheduled for interview.</p>
+                {% endfor %}
+            </div>
+
+
+            <div id="content-interviewed" class="tab-content">
+                {% if interviewed_applications %}
+                <div class="bulk-action-bar">
+                    <button type="button" class="action-btn bulk-reject-btn" 
+                            data-url="{% url 'reject-all' 'interviewed' job.job_id %}?tab=interviewed" 
+                            onclick="openBulkRejectModal(this.getAttribute('data-url'), 'Interviewed (Non-Offered)')">
+                        Reject All Interviewed (Non-Offered)
+                    </button>
+                </div>
+                {% endif %}
+
+                {% for applicant in interviewed_applications %}
+                <div class="application-card">
+                    <a href="#" class="card-overlay-link"></a>
+                    
+                    <div class="candidate-avatar">
+                        {% if applicant.candidate.profile_picture %}
+                            <img src="{{ applicant.candidate.profile_picture.url }}" alt="{{ applicant.candidate.user.first_name }}">
+                        {% else %}
+                            <i class="lni lni-user"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="candidate-info">
+                        <h4>{{applicant.candidate.user.first_name}} {{applicant.candidate.user.last_name}}</h4>
+                        {% if applicant.candidate.job_title %}
+                        <div class="candidate-job-title">
+                            <i class="lni lni-briefcase"></i> {{ applicant.candidate.job_title }}
+                        </div>
+                        {% endif %}
+                        <div class="candidate-meta">Applied on {{ applicant.applied_at|date:'F j, Y' }}</div>
+                    </div>
+                    
+                    <div class="status-badge status-interviewed">Interviewed</div>
+                    
+                    <div class="application-actions">
+                        <form method="POST">{% csrf_token %}
+                            <input type="hidden" name="application_id" value="{{applicant.application_id}}">
+                            <input type="hidden" name="updated_status" value="offered">
+                            <button class="action-btn">Offer</button>
+                        </form>
+                        <button type="button" class="action-btn action-reject" onclick="openRejectModal('{{applicant.application_id}}')">Reject</button>
+                        <a href="{{ applicant.candidate.resume.url }}" class="download-btn" title="Download Resume">
+                            <i class="lni lni-download"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="padding: 20px; color: #666;">No interviewed applications found.</p>
+                {% endfor %}
+            </div>
+
+
+            <div id="content-offered" class="tab-content">
+                {% for applicant in offered_applications %}
+                <div class="application-card">
+                    <a href="#" class="card-overlay-link"></a>
+                    
+                    <div class="candidate-avatar">
+                        {% if applicant.candidate.profile_picture %}
+                            <img src="{{ applicant.candidate.profile_picture.url }}" alt="{{ applicant.candidate.user.first_name }}">
+                        {% else %}
+                            <i class="lni lni-user"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="candidate-info">
+                        <h4>{{applicant.candidate.user.first_name}} {{applicant.candidate.user.last_name}}</h4>
+                        {% if applicant.candidate.job_title %}
+                        <div class="candidate-job-title">
+                            <i class="lni lni-briefcase"></i> {{ applicant.candidate.job_title }}
+                        </div>
+                        {% endif %}
+                        <div class="candidate-meta">Applied on {{ applicant.applied_at|date:'F j, Y' }}</div>
+                    </div>
+                    
+                    <div class="status-badge status-offered">Offered</div>
+                    
+                    <div class="application-actions">
+                        <a href="{{ applicant.candidate.resume.url }}" class="download-btn" title="Download Resume">
+                            <i class="lni lni-download"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="padding: 20px; color: #666;">No offered applications found.</p>
+                {% endfor %}
+            </div>
+
+
+            <div id="content-rejected" class="tab-content">
+                {% for applicant in rejected_applications %}
+                <div class="application-card">
+                    <a href="#" class="card-overlay-link"></a>
+                    
+                    <div class="candidate-avatar">
+                        {% if applicant.candidate.profile_picture %}
+                            <img src="{{ applicant.candidate.profile_picture.url }}" alt="{{ applicant.candidate.user.first_name }}">
+                        {% else %}
+                            <i class="lni lni-user"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="candidate-info">
+                        <h4>{{applicant.candidate.user.first_name}} {{applicant.candidate.user.last_name}}</h4>
+                        {% if applicant.candidate.job_title %}
+                        <div class="candidate-job-title">
+                            <i class="lni lni-briefcase"></i> {{ applicant.candidate.job_title }}
+                        </div>
+                        {% endif %}
+                        <div class="candidate-meta">Applied on {{ applicant.applied_at|date:'F j, Y' }}</div>
+                    </div>
+                    
+                    <div class="status-badge status-rejected">Rejected</div>
+                    
+                    <div class="application-actions">
+                        <a href="{{ applicant.candidate.resume.url }}" class="download-btn" title="Download Resume">
+                            <i class="lni lni-download"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="padding: 20px; color: #666;">No rejected applications found.</p>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="interviewModal" class="modal-overlay" {% if form_is_valid == False %}data-form-invalid="true"{% endif %}>
+    <div class="modal-content">
+        
+        <div class="modal-header">
+            <h3>Schedule Interview</h3>
+            <span class="close-modal" onclick="closeInterviewModal()">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            <form method="POST">
+                {% csrf_token %}
+
+                <input type="hidden" name="application_id" id="modal_application_id" 
+                       value="{% if form_is_valid == False %}{{ request.POST.application_id }}{% endif %}">
+
+                {% if interview_form.non_field_errors %}
+                <div class="non-field-errors">
+                    {{ interview_form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="modal-form-group {% if interview_form.interview_date.errors %}has-error{% endif %}">
+                    <label>{{ interview_form.interview_date.label }}</label>
+                    {{ interview_form.interview_date }}
+                    {% if interview_form.interview_date.errors %}
+                        {{ interview_form.interview_date.errors }}
+                    {% endif %}
+                </div>
+
+                <div class="modal-form-group {% if interview_form.interview_note.errors %}has-error{% endif %}">
+                    <label>{{ interview_form.interview_note.label }}</label>
+                    {{ interview_form.interview_note }}
+                    {% if interview_form.interview_note.errors %}
+                        {{ interview_form.interview_note.errors }}
+                    {% endif %}
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="modal-cancel-btn" onclick="closeInterviewModal()">
+                        Cancel
+                    </button>
+
+                    <button type="submit" name="action" value="schedule_interview" class="modal-submit-btn">
+                        Schedule Interview
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div id="rejectModal" class="modal-overlay">
+    <div class="modal-content">
+        
+        <div class="modal-header" style="background-color: #e03131;">
+            <h3>Reject Application</h3>
+            <span class="close-modal" onclick="closeRejectModal()">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="application_id" id="reject_application_id" value="">
+                <input type="hidden" name="updated_status" value="rejected">
+
+                <div class="modal-form-group">
+                    <label for="rejection_reason">Rejection Reason (Optional)</label>
+                    <textarea name="rejection_reason" id="rejection_reason" class="form-control" placeholder="Provide feedback or a reason for rejection..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="modal-cancel-btn" onclick="closeRejectModal()">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="modal-cancel-btn" onclick="document.getElementById('rejection_reason').value=''">
+                        Skip & Reject
+                    </button>
+
+                    <button type="submit" class="modal-submit-btn" style="background-color: #e03131;">
+                        Submit Reason & Reject
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div id="bulkRejectModal" class="modal-overlay">
+    <div class="modal-content">
+        
+        <div class="modal-header" style="background-color: #e03131;">
+            <h3 id="bulkRejectTitle">Reject All Applications</h3>
+            <span class="close-modal" onclick="closeBulkRejectModal()">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            <form id="bulkRejectForm" method="POST" action="">
+                {% csrf_token %}
+                
+                <div class="modal-form-group">
+                    <label for="bulk_rejection_reason">Rejection Reason (Optional)</label>
+                    <textarea name="rejection_reason" id="bulk_rejection_reason" class="form-control" placeholder="Provide feedback or a reason for mass rejection..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="modal-cancel-btn" onclick="closeBulkRejectModal()">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="modal-cancel-btn" onclick="document.getElementById('bulk_rejection_reason').value=''">
+                        Skip & Reject All
+                    </button>
+
+                    <button type="submit" class="modal-submit-btn" style="background-color: #e03131;">
+                        Submit Reason & Reject All
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{% include 'components/footer.html' %}
+
+<script>
+    // --- TAB SWITCHING LOGIC ---
+    function switchTab(tabName) {
+        const allTabs = document.querySelectorAll('.app-tab');
+        allTabs.forEach(tab => tab.classList.remove('active'));
+
+        const clickedTab = document.getElementById('tab-' + tabName);
+        if (clickedTab) clickedTab.classList.add('active');
+
+        const allContents = document.querySelectorAll('.tab-content');
+        allContents.forEach(content => content.classList.remove('active'));
+
+        const targetContent = document.getElementById('content-' + tabName);
+        if (targetContent) targetContent.classList.add('active');
+
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('tab', tabName);
+        window.history.replaceState({}, '', newUrl);
+    }
+
+    // --- INTERVIEW MODAL LOGIC ---
+    function openInterviewModal(applicationId) {
+        if (applicationId) {
+            document.getElementById('modal_application_id').value = applicationId;
+        }
+        const modal = document.getElementById('interviewModal');
+        modal.classList.add('active');
+        
+        const dateInput = document.getElementById('id_interview_date'); 
+        if (dateInput && !dateInput.value) {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            dateInput.value = now.toISOString().slice(0,16);
+        }
+    }
+
+    function closeInterviewModal() {
+        const modal = document.getElementById('interviewModal');
+        modal.classList.remove('active');
+        
+        if (modal.getAttribute('data-form-invalid') !== 'true') {
+            const dateInput = document.getElementById('id_interview_date');
+            if (dateInput) dateInput.value = '';
+            
+            const noteInput = document.getElementById('id_interview_note');
+            if (noteInput) noteInput.value = '';
+        }
+    }
+
+    // --- REJECT MODAL LOGIC ---
+    function openRejectModal(applicationId) {
+        if (applicationId) {
+            document.getElementById('reject_application_id').value = applicationId;
+        }
+        document.getElementById('rejectModal').classList.add('active');
+    }
+
+    function closeRejectModal() {
+        const modal = document.getElementById('rejectModal');
+        modal.classList.remove('active');
+        const reasonInput = document.getElementById('rejection_reason');
+        if (reasonInput) reasonInput.value = '';
+    }
+
+    // --- BULK REJECT MODAL LOGIC ---
+    function openBulkRejectModal(targetUrl, statusLabel) {
+        const modal = document.getElementById('bulkRejectModal');
+        const form = document.getElementById('bulkRejectForm');
+        const title = document.getElementById('bulkRejectTitle');
+
+        form.action = targetUrl;
+        title.innerText = 'Reject All ' + statusLabel + ' Applications';
+
+        modal.classList.add('active');
+    }
+
+    function closeBulkRejectModal() {
+        const modal = document.getElementById('bulkRejectModal');
+        modal.classList.remove('active');
+        const reasonInput = document.getElementById('bulk_rejection_reason');
+        if (reasonInput) reasonInput.value = '';
+    }
+
+    // --- GLOBAL MODAL EVENTS ---
+    window.onclick = function(event) {
+        const interviewModal = document.getElementById('interviewModal');
+        const rejectModal = document.getElementById('rejectModal');
+        const bulkRejectModal = document.getElementById('bulkRejectModal');
+        
+        if (event.target === interviewModal) {
+            closeInterviewModal();
+        } else if (event.target === rejectModal) {
+            closeRejectModal();
+        } else if (event.target === bulkRejectModal) {
+            closeBulkRejectModal();
+        }
+    }
+    
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeInterviewModal();
+            closeRejectModal();
+            closeBulkRejectModal();
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get('tab') || 'all'; 
+        
+        if (document.getElementById('tab-' + activeTab)) {
+            switchTab(activeTab);
+        }
+
+        const modal = document.getElementById('interviewModal');
+        if (modal && modal.getAttribute('data-form-invalid') === 'true') {
+            openInterviewModal();
+        }
+    });
+</script>
+
+{% endblock %}

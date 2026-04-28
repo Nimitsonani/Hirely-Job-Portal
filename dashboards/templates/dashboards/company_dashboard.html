@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Company Dashboard{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/dashboard.css' %}">
+<style>
+    /* ============================= */
+    /* DASHBOARD LAYOUT & SPACING */
+    /* ============================= */
+    .dashboard-section {
+        padding: 120px 0 80px 0; 
+        background-color: #f8f9fa; 
+        min-height: 100vh;
+    }
+
+    /* ============================= */
+    /* FLOATING MENU BUTTON */
+    /* ============================= */
+    .floating-menu-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        width: 50px;
+        height: 50px;
+        background-color: #007bff; /* Primary brand blue */
+        color: #ffffff;
+        border: none;
+        border-radius: 4px; /* Sharp professional corners */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        cursor: pointer;
+        z-index: 1030;
+        transition: all 0.3s ease;
+    }
+
+    .floating-menu-btn:hover {
+        background-color: #0056b3;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    /* ============================= */
+    /* OFF-CANVAS SIDEBAR (The Drawer) */
+    /* ============================= */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(17, 24, 39, 0.4);
+        backdrop-filter: blur(3px); /* High-end glass effect */
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .sidebar-drawer {
+        position: fixed;
+        top: 0;
+        left: -320px; /* Hidden off-screen */
+        width: 300px;
+        height: 100vh;
+        background: #ffffff;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+        z-index: 1050;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Silky smooth slide */
+        padding: 30px 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar-drawer.open {
+        left: 0; /* Slides in */
+    }
+
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .sidebar-header h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #111827;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .btn-close-sidebar {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: #6b7280;
+        cursor: pointer;
+        transition: 0.2s;
+        padding: 5px;
+    }
+    .btn-close-sidebar:hover {
+        color: #dc2626; /* Soft red on hover */
+    }
+
+    .sidebar-nav-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; 
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        color: #4b5563;
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+    .sidebar-link i {
+        margin-right: 12px;
+        font-size: 18px;
+        width: 20px;
+        text-align: center;
+        color: #9ca3af;
+        transition: color 0.2s ease;
+    }
+    .sidebar-link:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+    }
+    .sidebar-link:hover i {
+        color: #4b5563;
+    }
+    .sidebar-link.active {
+        background-color: #e0f2fe; 
+        color: #0369a1; 
+        font-weight: 600;
+    }
+    .sidebar-link.active i {
+        color: #0284c7;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<button id="openSidebarBtn" class="floating-menu-btn" aria-label="Open Dashboard Menu">
+    <i class="lni lni-menu"></i>
+</button>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="sidebar-drawer" id="sidebarDrawer">
+    <div class="sidebar-header">
+        <h4>Company Menu</h4>
+        <button class="btn-close-sidebar" id="closeSidebarBtn">
+            <i class="lni lni-close"></i>
+        </button>
+    </div>
+    
+    <div class="sidebar-nav-list">
+        <a href="{% url 'post-job-page' %}" class="sidebar-link">
+            <i class="lni lni-circle-plus"></i> Add Job
+        </a>
+        <a href="{% url 'company-dashboard-manage-jobs' 1 %}" class="sidebar-link {% if manage_jobs %}active{% endif %}">
+            <i class="lni lni-briefcase"></i> Manage Jobs
+        </a>
+        <a href="{% url 'company-dashboard-profile' %}" class="sidebar-link {% if company_profile %}active{% endif %}">
+            <i class="lni lni-user"></i> Profile
+        </a>
+        <a href="{% url 'notifications-page' 1 %}" class="sidebar-link">
+            <i class="lni lni-alarm"></i> Notifications
+        </a>
+    </div>
+</div>
+<div class="dashboard-section">
+    <div class="container" style="max-width: 96% !important;">
+        
+        <div class="row">
+            <div class="col-12">
+                {% if manage_jobs %}
+                    {% include 'dashboards/components/manage_jobs.html' %}
+                {% elif company_profile %}
+                    {% include 'dashboards/components/company_profile.html' %}
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% include 'components/footer.html' %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const openBtn = document.getElementById('openSidebarBtn');
+        const closeBtn = document.getElementById('closeSidebarBtn');
+        const overlay = document.getElementById('sidebarOverlay');
+        const drawer = document.getElementById('sidebarDrawer');
+
+        function openSidebar() {
+            overlay.classList.add('show');
+            drawer.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Prevents background scrolling
+        }
+
+        function closeSidebar() {
+            overlay.classList.remove('show');
+            drawer.classList.remove('open');
+            document.body.style.overflow = ''; // Restores scrolling
+        }
+
+        if(openBtn) openBtn.addEventListener('click', openSidebar);
+        if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if(overlay) overlay.addEventListener('click', closeSidebar);
+    });
+</script>
+{% endblock %}
