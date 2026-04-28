@@ -1,0 +1,269 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+{% block title %}Verify OTP - Hirely{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/auth.css' %}">
+<style>
+    /* Input Styling */
+    .otp-input {
+        letter-spacing: 5px;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    /* Error Styling */
+    .errorlist {
+        color: #dc3545;
+        list-style-type: none;
+        padding-left: 0;
+        margin-bottom: 5px;
+        font-size: 0.9em;
+    }
+    
+    .form-global-error {
+        color: #dc3545;
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    /* Label Styling */
+    .form-group label {
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+
+    .form-group label .required {
+        color: #dc3545;
+        margin-left: 4px;
+        margin-right: 6px;
+    }
+
+    .form-group label i {
+        color: #adb5bd;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .form-group label i:hover {
+        color: #0d6efd;
+    }
+
+    /* Timer Styling */
+    .timer-container {
+        display: inline-block;
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    .timer-text {
+        font-family: monospace;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0d6efd;
+        margin-left: 5px;
+    }
+
+    .timer-expired {
+        color: #dc3545 !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="auth-hero" data-bg="{% static 'assets/images/auth/candidate.jpg' %}">
+    <div class="auth-hero-overlay">
+        <div class="container">
+            <h2>Account Verification</h2>
+            <div class="auth-hero-divider"></div>
+            <p>Please check your email and phone for the verification codes.<br>This helps us keep your Hirely account secure.</p>
+        </div>
+    </div>
+</section>
+
+<section class="hero-area auth-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8 col-12">
+                <div class="auth-split-wrapper" style="grid-template-columns: 1fr;"> 
+                    <div class="auth-side-form">
+                        <div class="col-lg-12 col-md-12 col-12">
+
+                            <div class="form-card auth-card-inner">
+                                <div class="auth-card-form">
+
+                                    <div class="heading text-center mb-4">
+                                        <h3>Verify Your Account</h3>
+                                        <p>Enter the codes sent to your email and phone</p>
+                                    </div>
+
+                                    {% if form.non_field_errors %}
+                                    <div class="form-global-error">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                    {% endif %}
+
+                                    <form action="{% url 'verify-otp-page' %}" method="post">
+                                        {% csrf_token %}
+
+                                        <div class="form-group mb-4">
+                                            {{ form.email_OTP.errors }}
+                                            <label>
+                                                Email Verification Code <span class="required">*</span>
+                                                <i class="lni lni-question-circle" data-tooltip="Check your inbox or spam folder for a 6-digit code."></i>
+                                            </label>
+                                            {{ form.email_OTP }} 
+                                        </div>
+
+                                        <div class="form-group mb-4">
+                                            {{ form.phone_no_OTP.errors }}
+                                            <label>
+                                                Phone Verification Code <span class="required">*</span>
+                                                <i class="lni lni-question-circle" data-tooltip="Check your SMS messages for a 6-digit code."></i>
+                                            </label>
+                                            {{ form.phone_no_OTP }}
+                                        </div>
+
+                                        <button class="btn-register w-100 mt-3" type="submit">Verify & Continue</button>
+
+                                        <div class="resend-wrapper mt-4 text-center">
+                                            <div class="timer-container" id="timer-box">
+                                                Valid for <span id="otp-timer" class="timer-text">--:--</span>
+                                            </div>
+                                            
+                                            <div class="form-footer-note mt-2">
+                                                Didn't receive a code? 
+                                                
+                                                <span id="resend-timer-text" style="color: #6c757d; font-weight: 500;">
+                                                    Wait <span id="resend-timer-count" style="font-family: monospace; font-weight: bold;">--:--</span>
+                                                </span>
+                                                
+                                                <a href="{% url 'resend-otp' %}" class="switch-link" id="resend-link" style="display: none; color: #0d6efd; text-decoration: none; font-weight: bold;">Resend OTP</a>
+                                            </div>
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'components/footer.html' %}
+{% endblock %}
+
+{% block js %}
+<script>
+    // Background script
+    document.querySelectorAll('.auth-hero[data-bg]').forEach(function (el) {
+        el.style.backgroundImage = 'url(' + el.dataset.bg + ')';
+    });
+
+    // 1. Countdown Timer for OTP Validity (ttl)
+    function startValidityTimer(duration, display) {
+        let timer = duration, minutes, seconds;
+        
+        function updateTimerUI() {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (timer <= 0) {
+                clearInterval(countdown);
+                display.textContent = "Expired";
+                display.classList.add('timer-expired');
+            }
+            timer--;
+        }
+
+        updateTimerUI(); // Run immediately 
+        let countdown = setInterval(updateTimerUI, 1000); 
+    }
+
+    // 2. Countdown Timer for Resend Button (ttl_resend)
+    function startResendTimer(duration, timerTextSpan, countSpan, resendLink) {
+        let timer = duration, minutes, seconds;
+
+        function updateResendUI() {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            countSpan.textContent = minutes + ":" + seconds;
+
+            if (timer <= 0) {
+                clearInterval(countdown);
+                // Hide the "Wait --:--" text and show the active link
+                timerTextSpan.style.display = 'none';
+                resendLink.style.display = 'inline-block';
+            }
+            timer--;
+        }
+
+        updateResendUI(); // Run immediately
+        let countdown = setInterval(updateResendUI, 1000);
+    }
+
+    // Initialize timers using the TTLs passed from the Django Backend
+    window.addEventListener('load', function () {
+        
+        // DOM Elements
+        let displayValidity = document.querySelector('#otp-timer');
+        let resendTimerText = document.getElementById('resend-timer-text');
+        let resendTimerCount = document.getElementById('resend-timer-count');
+        let resendLink = document.getElementById('resend-link');
+        
+        // Handle OTP Validity Timer (ttl)
+        if (displayValidity) {
+            let timeRemaining = parseInt("{{ ttl|default:'0' }}", 10);
+            
+            if (timeRemaining > 0) {
+                startValidityTimer(timeRemaining, displayValidity);
+            } else {
+                displayValidity.textContent = "Expired";
+                displayValidity.classList.add('timer-expired');
+            }
+        }
+
+        // Handle Resend Link Timer (ttl_resend)
+        if (resendLink && resendTimerText && resendTimerCount) {
+            let resendRemaining = parseInt("{{ ttl_resend|default:'0' }}", 10);
+            
+            if (resendRemaining > 0) {
+                // Keep the wait text visible and hide the link
+                resendTimerText.style.display = 'inline-block';
+                resendLink.style.display = 'none';
+                startResendTimer(resendRemaining, resendTimerText, resendTimerCount, resendLink);
+            } else {
+                // If backend says 0 or negative, show link immediately
+                resendTimerText.style.display = 'none';
+                resendLink.style.display = 'inline-block';
+            }
+        }
+    });
+</script>
+{% endblock %}

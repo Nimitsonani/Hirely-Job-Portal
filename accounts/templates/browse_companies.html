@@ -1,0 +1,450 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Browse Companies{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/auth.css' %}">
+<style>
+    /* ============================= */
+    /* BROWSE PAGE LAYOUT */
+    /* ============================= */
+    .browse-section {
+        padding: 60px 0; /* Adjusted padding since hero handles top space */
+        background-color: #fafaf9; 
+        min-height: 80vh;
+    }
+    
+    .browse-section .container {
+        max-width: 96% !important; 
+        transition: all 0.3s ease;
+    }
+    @media (max-width: 768px) {
+        .browse-section .container {
+            max-width: 100% !important;
+            padding: 0 15px;
+        }
+    }
+    
+    /* ============================= */
+    /* FILTER SIDEBAR */
+    /* ============================= */
+    .filter-sidebar {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+        /* Smooth transition for when it appears */
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .filter-widget {
+        margin-bottom: 25px;
+    }
+    .filter-widget:last-child {
+        margin-bottom: 0;
+    }
+    .filter-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .filter-input {
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+        color: #334155;
+        outline: none;
+        transition: 0.2s;
+    }
+    .filter-input:focus {
+        border-color: #3b5bdb;
+    }
+    
+    /* Checkboxes */
+    .filter-check-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .filter-check-list li {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: #475569;
+    }
+    .filter-check-list li:last-child { margin-bottom: 0; }
+    
+    .btn-filter {
+        width: 100%;
+        background: #3b5bdb;
+        color: #fff;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-filter:hover { background: #2a41a8; }
+
+    .btn-clear {
+        display: block;
+        width: 100%;
+        text-align: center;
+        background: #f1f5f9;
+        color: #475569;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-top: 10px;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .btn-clear:hover { background: #e2e8f0; color: #334155; }
+
+    /* ============================= */
+    /* TOGGLE BUTTON */
+    /* ============================= */
+    .btn-toggle-filters {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 8px 16px;
+        border-radius: 6px;
+        color: #334155;
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-toggle-filters:hover {
+        background: #f1f5f9;
+        border-color: #94a3b8;
+    }
+    .btn-toggle-filters.active {
+        background: #e0e7ff;
+        color: #4f46e5;
+        border-color: #c7d2fe;
+    }
+
+    /* ============================= */
+    /* COMPANY GRID CARDS */
+    /* ============================= */
+    .company-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 25px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        text-align: center;
+        margin-bottom: 24px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 24px); 
+    }
+    .company-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        border-color: #cbd5e1;
+    }
+    
+    /* Logo Box */
+    .comp-logo-box {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 15px auto;
+        background: #f8fafc;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #f1f5f9;
+        overflow: hidden; 
+    }
+    
+    .comp-logo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Shows the whole logo without cropping */
+        padding: 8px; /* Adds a little breathing room around the logo inside the box */
+        background-color: #ffffff; /* Ensures transparent logos look good */
+    }
+
+    /* Typography */
+    .comp-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 8px;
+    }
+    .comp-meta {
+        font-size: 13px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .comp-meta i {
+        color: #94a3b8;
+        margin-right: 4px;
+    }
+
+    /* Badges & Buttons */
+    .open-jobs-badge {
+        background: #e0e7ff;
+        color: #4f46e5;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+    
+    .btn-view-comp {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background: transparent;
+        border: 1px solid #3b5bdb;
+        color: #3b5bdb;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: 0.2s;
+        margin-top: auto; /* Pushes button to bottom */
+    }
+    .company-card:hover .btn-view-comp {
+        background: #3b5bdb;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<section class="auth-hero" data-bg="{% static 'assets/images/auth/company.jpg' %}">
+    <div class="auth-hero-overlay">
+        <div class="container" style="max-width: 96% !important;">
+            <h2>Discover Top Companies</h2>
+            <div class="auth-hero-divider"></div>
+            <p>Connect with industry leaders and find your next great workplace.<br>Explore company profiles, culture, and open positions.</p>
+        </div>
+    </div>
+</section>
+
+<div class="browse-section">
+    <div class="container">
+        
+        <div class="search-job mb-5">
+            <form action="{% url 'search-companies' 1 %}" method="GET">
+                <div class="search-nner">
+                    <div class="row">
+                        <div class="col-lg-10 col-md-9 col-xs-12 mb-3 mb-md-0">
+                            <input type="text" name="query" class="form-control" placeholder="Search companies by title, keyword, or location..." value="{{ query|default:'' }}" required style="height: 54px;">
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-xs-12 button">
+                            <button type="submit" class="btn btn-common float-right" style="width: 100%; height: 54px; margin: 0; display: flex; align-items: center; justify-content: center;">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row mb-4 align-items-center">
+            <div class="col-lg-6 col-12">
+                <h2 style="font-size: 24px; font-weight: 700; color: #0f172a;">Browse Top Companies</h2>
+                <p style="color: #64748b; font-size: 15px;">Discover 1,200+ companies hiring on our platform.</p>
+            </div>
+            <div class="col-lg-6 col-12 text-lg-end text-start mt-3 mt-lg-0 d-flex align-items-center justify-content-lg-end">
+                <span style="font-size: 14px; color: #64748b;">Showing Companies</span>
+                
+                <button id="toggleFilterBtn" class="btn-toggle-filters">
+                    <i class="lni lni-funnel"></i> Filters
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            
+            <div id="filterSidebarWrapper" class="col-lg-3 col-md-4 col-12 mb-4 mb-md-0 d-none">
+                <div class="filter-sidebar">
+                    
+                    <form method="GET" action="{% url 'browse-companies-page' page_no=1 %}">
+                        
+                        <div class="filter-widget">
+                            <h4 class="filter-title">Location</h4>
+                            <input type="text" name="location" class="filter-input" placeholder="City or Region" value="{{ request.GET.location }}">
+                        </div>
+
+                        <button type="submit" class="btn-filter">Apply Filters</button>
+                        <a href="{% url 'browse-companies-page' page_no=1 %}" class="btn-clear">Clear Filters</a>
+
+                    </form>
+                    </div>
+            </div>
+            
+            <div id="mainGridWrapper" class="col-lg-12 col-md-12 col-12">
+                
+                <div class="row">
+                    {% for company in companies %}
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                        <div class="company-card">
+                            <div class="comp-logo-box">
+                                {% if company.profile_picture %}
+                                    <img src="{{ company.profile_picture.url }}" alt="{{ company.company_display_name }} Logo">
+                                {% else %}
+                                    <img src="{% static 'assets/images/default/company_default.png' %}" alt="Default Company Logo">
+                                {% endif %}
+                            </div>
+                            <h3 class="comp-title">{{company.company_display_name}}</h3>
+                            <div class="comp-meta">
+                                <span><i class="lni lni-map-marker"></i> {{company.location}}</span>
+                                <span><i class="lni lni-grid-alt"></i> Tech</span>
+                            </div>
+                            <div class="open-jobs-badge">{{company.no_of_jobs}} Open Jobs</div>
+                            <a href="{% url 'company-public-profile-page' company.company_username %}" class="btn-view-comp">View Profile</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p style="color: #64748b;">No companies found matching your current filters.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="pagination-wrapper">
+                            {% if query %}
+                            <ul class="pagination-list">
+                            {% if page_no > 1 %}
+                            <li>
+                                <a href="{% url 'search-companies' page_no|add:'-1' %}?query={{query}}">
+                                    <i class="lni lni-arrow-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for i in page_range %}
+                            <li {% if page_no == i %}class="active"{% endif %}>
+                                <a href="{% url 'search-companies' i %}?query={{query}}">{{ i }}</a>
+                            </li>
+                            {% endfor %}
+
+                            {% if page_no < total_pages %}
+                            <li>
+                                <a href="{% url 'search-companies' page_no|add:'1' %}?query={{query}}">
+                                    <i class="lni lni-arrow-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            </ul>
+                            {% else %}
+                            <ul class="pagination-list">
+                            {% if page_no > 1 %}
+                            <li>
+                                <a href="{% url 'browse-companies-page' page_no|add:'-1' %}?location={{ request.GET.location }}">
+                                    <i class="lni lni-arrow-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for i in page_range %}
+                            <li {% if page_no == i %}class="active"{% endif %}>
+                                <a href="{% url 'browse-companies-page' i %}?location={{ request.GET.location }}">{{ i }}</a>
+                            </li>
+                            {% endfor %}
+
+                            {% if page_no < total_pages %}
+                            <li>
+                                <a href="{% url 'browse-companies-page' page_no|add:'1' %}?location={{ request.GET.location }}">
+                                    <i class="lni lni-arrow-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'components/footer.html' %}
+{% endblock %}
+
+{% block js %}
+<script>
+    // This script ensures the image loads correctly with the auth.css styles
+    document.querySelectorAll('.auth-hero[data-bg]').forEach(function (el) {
+        el.style.backgroundImage = 'url(' + el.dataset.bg + ')';
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggleFilterBtn');
+        const sidebar = document.getElementById('filterSidebarWrapper');
+        const mainGrid = document.getElementById('mainGridWrapper');
+
+        // Auto-open sidebar if filter is active
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('location') && urlParams.get('location').trim() !== "") {
+            sidebar.classList.remove('d-none');
+            mainGrid.classList.remove('col-lg-12', 'col-md-12');
+            mainGrid.classList.add('col-lg-9', 'col-md-8');
+            toggleBtn.classList.add('active');
+        }
+
+        toggleBtn.addEventListener('click', function() {
+            // Check if sidebar is currently hidden
+            if (sidebar.classList.contains('d-none')) {
+                // SHOW SIDEBAR
+                sidebar.classList.remove('d-none');
+                
+                // Change grid to 9 columns
+                mainGrid.classList.remove('col-lg-12', 'col-md-12');
+                mainGrid.classList.add('col-lg-9', 'col-md-8');
+                
+                // Update Button Style
+                toggleBtn.classList.add('active');
+            } else {
+                // HIDE SIDEBAR
+                sidebar.classList.add('d-none');
+                
+                // Change grid back to full 12 columns
+                mainGrid.classList.remove('col-lg-9', 'col-md-8');
+                mainGrid.classList.add('col-lg-12', 'col-md-12');
+                
+                // Update Button Style
+                toggleBtn.classList.remove('active');
+            }
+        });
+    });
+</script>
+{% endblock %}

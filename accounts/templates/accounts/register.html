@@ -1,0 +1,462 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+{% block title %}{% if edit_profile %}Edit Profile{% else %}Register{% endif %}{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/auth.css' %}">
+<style>
+    /* This makes all Django form errors red */
+    .errorlist {
+        color: #dc3545; /* Red color */
+        list-style-type: none; /* Removes the bullet points */
+        padding-left: 0;
+        margin-bottom: 5px;
+        font-size: 0.9em;
+    }
+    
+    .form-global-error {
+        color: #dc3545; /* Red color */
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{% if not_company %}
+<section class="auth-hero" data-bg="{% static 'assets/images/auth/candidate.jpg' %}">
+{% else %}
+<section class="auth-hero" data-bg="{% static 'assets/images/auth/company.jpg' %}">
+{% endif %}
+    <div class="auth-hero-overlay">
+        <div class="container">
+            {% if not_company %}
+            <h2>{% if edit_profile %}Update your Profile{%else%}Create your account{%endif%}</h2>
+            <div class="auth-hero-divider"></div>
+            <p>Start your journey with Hirely and discover thousands of opportunities.<br>Find the job that matches
+                your
+                skills and take the next step in your career.</p>
+            {% else %}
+            <h2>{% if edit_profile %}Update your Company Profile{% else %}Register your company{% endif %}</h2>
+            <div class="auth-hero-divider"></div>
+            <p>
+                {% if edit_profile %}
+                Keep your company details up to date to attract the best talent.<br>Showcase your culture and latest information.
+                {% else %}
+                Start hiring top talent with Hirely and grow your team effortlessly.<br>Connect with the best
+                candidates
+                and build the team you've always wanted.
+                {% endif %}
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="hero-area auth-page">
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <div class="col-lg-10 col-md-12 col-12">
+                <div class="auth-split-wrapper">
+
+                    {% if not_company %}
+                    <div class="auth-side-image">
+                        <img src="{% static 'assets/images/auth/candidate.jpg' %}" alt="Illustration">
+                    </div>
+                    {% endif %}
+
+                    <div class="auth-side-form">
+                        <div class="col-lg-12 col-md-12 col-12">
+
+                            <div class="form-card auth-card-inner">
+
+                                {% if not_company %}
+                                <div class="auth-card-image">
+                                    <img src="{% static 'assets/images/auth/candidate.jpg' %}">
+                                </div>
+                                {% endif %}
+
+                                <div class="auth-card-form">
+
+                                    <div class="heading text-center mb-4">
+                                        {% if not_company %}
+                                        <h3>{% if edit_profile %}Update your Profile{%else%}Create your account{%endif%}</h3>
+                                        <p>Start your journey with Hirely</p>
+                                        {% else %}
+                                        <h3>{% if edit_profile %}Update Company Profile{% else %}Register your company{% endif %}</h3>
+                                        <p>{% if edit_profile %}Update your company details{% else %}Start hiring top talent{% endif %}</p>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if not_company %}
+                                    <div class="switch-container text-center mb-4">
+                                        <span>Are you hiring?</span>
+                                        <a href="{% url 'register-company-page' %}" class="switch-link">
+                                            Register as a company
+                                        </a>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if form.non_field_errors %}
+                                    <div class="form-global-error">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                    {% endif %}
+
+                                    {% if not_company %}
+                                    <form method="post" {% if edit_profile %}action="{% url 'edit-candidate-profile-page' %}"{%else%}action="{% url 'register-page' %}"{%endif%}
+                                        enctype="multipart/form-data">
+                                        {% csrf_token %}
+
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                {{ form.first_name.errors }}
+                                                <label>First Name <span class="required">*</span></label>
+                                                {{ form.first_name }}
+                                            </div>
+
+                                            <div class="col-md-6 form-group">
+                                                {{ form.last_name.errors }}
+                                                <label>Last Name <span class="required">*</span></label>
+                                                {{ form.last_name }}
+                                            </div>
+                                        </div>
+                                        {% if not edit_profile %}
+                                        <div class="form-group">
+                                            {{ form.email.errors }}
+                                            <label>
+                                                Email <span class="required">*</span>
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Your login email address. This will also be used for account verification and notifications."></i>
+                                            </label>
+                                            {{ form.email }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.phone_no.errors }}
+                                            <label>
+                                                Phone Number <span class="required">*</span>
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Your contact number with country code. Used for account verification and important alerts."></i>
+                                            </label>
+                                            {{ form.phone_no }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.password.errors }}
+                                            <label>
+                                                Password <span class="required">*</span>
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Use at least 8 characters with a mix of letters, numbers, and symbols for better security."></i>
+                                            </label>
+                                            <div class="position-relative">
+                                                {{ form.password }}
+                                                <span class="toggle-password lni lni-eye"
+                                                    onclick="togglePassword(this)"></span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="form-group">
+                                            {{ form.username.errors }}
+                                            <label>
+                                                Username <span class="required">*</span>
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Choose a Unique Username without spaces."></i>
+                                            </label>
+                                            {{ form.username }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.job_title.errors }}
+                                            <label>
+                                                Job Title <span class="required">*</span>
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Your professional title (e.g. Python Backend Developer)."></i>
+                                            </label>
+                                            {{ form.job_title }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.bio.errors }}
+                                            <label>
+                                                Bio
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Short professional introduction about yourself (visible to recruiters)."></i>
+                                            </label>
+                                            {{ form.bio }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.location.errors }}
+                                            <label>Location</label>
+                                            {{ form.location }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.skills.errors }}
+                                            <label>
+                                                Skills
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Comma-separated list of your key skills (e.g. Python, Django, SQL, Leadership)."></i>
+                                            </label>
+                                            {{ form.skills }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.experience_level.errors }}
+                                            <label>Experience Level</label>
+                                            {{ form.experience_level }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.experience_description.errors }}
+                                            <label>
+                                                Experience Description
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Describe your previous work experience, roles, responsibilities, and achievements in detail."></i>
+                                            </label>
+                                            {{ form.experience_description }}
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                {{ form.degree.errors }}
+                                                <label>Degree</label>
+                                                {{ form.degree }}
+                                            </div>
+
+                                            <div class="col-md-6 form-group">
+                                                {{ form.field_of_study.errors }}
+                                                <label>Field of Study</label>
+                                                {{ form.field_of_study }}
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.college_name.errors }}
+                                            <label>College Name</label>
+                                            {{ form.college_name }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.university_name.errors }}
+                                            <label>University Name</label>
+                                            {{ form.university_name }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.school_name.errors }}
+                                            <label>School Name</label>
+                                            {{ form.school_name }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.projects.errors }}
+                                            <label>
+                                                Projects
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Describe any notable academic, personal, or professional projects you've worked on."></i>
+                                            </label>
+                                            {{ form.projects }}
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                {{ form.github_link.errors }}
+                                                <label>
+                                                    GitHub Link
+                                                    <i class="lni lni-question-circle"
+                                                        data-tooltip="Link to your GitHub profile or portfolio."></i>
+                                                </label>
+                                                {{ form.github_link }}
+                                            </div>
+
+                                            <div class="col-md-6 form-group">
+                                                {{ form.linkedin_link.errors }}
+                                                <label>
+                                                    LinkedIn Link
+                                                    <i class="lni lni-question-circle"
+                                                        data-tooltip="Link to your LinkedIn profile."></i>
+                                                </label>
+                                                {{ form.linkedin_link }}
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.profile_picture.errors }}
+                                            <label>Profile Picture</label>
+                                            {{ form.profile_picture }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.resume.errors }}
+                                            <label>
+                                                Resume
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Upload your resume in PDF or DOC format (max size usually 5MB)."></i>
+                                            </label>
+                                            {{ form.resume }}
+                                        </div>
+
+                                        <button class="btn-register w-100 mt-3">{% if edit_profile %}Update Profile{% else %}Create Account{% endif %}</button>
+
+                                        <div class="form-footer-note">
+                                            By continuing, you agree to our terms and privacy policy.
+                                        </div>
+                                    </form>
+
+                                    {% else %}
+
+                                    <form action="{% if edit_profile %}{% url 'edit-company-profile-page' %}{% else %}{% url 'register-company-page' %}{% endif %}" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+
+                                        {% if not edit_profile %}
+                                        <div class="form-group">
+                                            {{ form.email.errors }}
+                                            <label>
+                                                Email <span class="required">*</span>
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="This email is used exclusively for logging into your company account and receiving notifications. It is not visible to candidates."></i>
+                                            </label>
+                                            {{ form.email }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.phone_no.errors }}
+                                            <label>Phone Number <span class="required">*</span><i
+                                                    class="lni lni-question-circle"
+                                                    data-tooltip="Main company contact number used for account verification and important communications. Not publicly visible."></i></label>
+                                            {{ form.phone_no }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.password.errors }}
+                                            <label>Password <span class="required">*</span></label>
+                                            <div class="position-relative">
+                                                {{ form.password }}
+                                                <span class="toggle-password lni lni-eye"
+                                                    onclick="togglePassword(this)"></span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="form-group">
+                                            {{ form.company_username.errors }}
+                                            <label>
+                                                Username <span class="required">*</span>
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Choose a Unique Username."></i>
+                                            </label>
+                                            {{ form.company_username }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.company_display_name.errors }}
+                                            <label>
+                                                Company Name <span class="required">*</span>
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Official public name of your company as it will appear to candidates and users."></i>
+                                            </label>
+                                            {{ form.company_display_name }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.contact_email.errors }}
+                                            <label>
+                                                Contact Email
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Public email address that candidates can use to contact your company (e.g. hr@yourcompany.com)."></i>
+                                            </label>
+                                            {{ form.contact_email }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.contact_mobile_no.errors }}
+                                            <label>
+                                                Contact Phone Number
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Public phone number that candidates can call or message for job-related inquiries."></i>
+                                            </label>
+                                            {{ form.contact_mobile_no }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.description.errors }}
+                                            <label>
+                                                Description
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Brief overview of your company, its mission, culture, and what makes it a great place to work."></i>
+                                            </label>
+                                            {{ form.description }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.website.errors }}
+                                            <label>
+                                                Website
+                                                <i class="lni lni-question-circle"
+                                                    data-tooltip="Company website URL. Please include https:// (e.g. https://www.example.com)"></i>
+                                            </label>
+                                            {{ form.website }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.location.errors }}
+                                            <label>Location <span class="required">*</span></label>
+                                            {{ form.location }}
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{ form.profile_picture.errors }}
+                                            <label>Company Logo</label>
+                                            {{ form.profile_picture }}
+                                        </div>
+
+                                        <button class="btn-register w-100 mt-3">{% if edit_profile %}Update Company Profile{% else %}Register Company{% endif %}</button>
+
+                                        <div class="form-footer-note">
+                                            By continuing, you agree to our terms and privacy policy.
+                                        </div>
+                                    </form>
+
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% include 'components/footer.html' %}
+{% endblock %}
+
+{% block js %}
+<script>
+    document.querySelectorAll('.auth-hero[data-bg]').forEach(function (el) {
+        el.style.backgroundImage = 'url(' + el.dataset.bg + ')';
+    });
+
+    function togglePassword(el) {
+        const input = el.closest('.position-relative').querySelector('input');
+
+        if (input.type === "password") {
+            input.type = "text";
+            el.classList.add("show");
+        } else {
+            input.type = "password";
+            el.classList.remove("show");
+        }
+    }
+</script>
+{% endblock %}

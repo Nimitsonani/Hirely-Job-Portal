@@ -1,0 +1,461 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Browse Candidates{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/auth.css' %}">
+<style>
+    /* ============================= */
+    /* BROWSE PAGE LAYOUT */
+    /* ============================= */
+    .browse-section {
+        padding: 60px 0; 
+        background-color: #fafaf9; 
+        min-height: 80vh;
+    }
+    
+    .browse-section .container {
+        max-width: 96% !important; 
+        transition: all 0.3s ease;
+    }
+    @media (max-width: 768px) {
+        .browse-section .container {
+            max-width: 100% !important;
+            padding: 0 15px;
+        }
+    }
+    
+    /* ============================= */
+    /* FILTER SIDEBAR */
+    /* ============================= */
+    .filter-sidebar {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .filter-widget {
+        margin-bottom: 25px;
+    }
+    .filter-widget:last-child {
+        margin-bottom: 0;
+    }
+    .filter-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .filter-input {
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+        color: #334155;
+        outline: none;
+        transition: 0.2s;
+    }
+    .filter-input:focus {
+        border-color: #3b5bdb;
+    }
+    
+    .btn-filter {
+        width: 100%;
+        background: #3b5bdb;
+        color: #fff;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-top: 10px;
+        transition: 0.2s;
+        cursor: pointer;
+    }
+    .btn-filter:hover { background: #2a41a8; }
+    
+    .btn-clear {
+        display: block;
+        width: 100%;
+        text-align: center;
+        background: #f1f5f9;
+        color: #475569;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-top: 10px;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .btn-clear:hover { background: #e2e8f0; color: #334155; }
+
+    /* ============================= */
+    /* TOGGLE BUTTON */
+    /* ============================= */
+    .btn-toggle-filters {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 8px 16px;
+        border-radius: 6px;
+        color: #334155;
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-toggle-filters:hover {
+        background: #f1f5f9;
+        border-color: #94a3b8;
+    }
+    .btn-toggle-filters.active {
+        background: #e0e7ff;
+        color: #4f46e5;
+        border-color: #c7d2fe;
+    }
+
+    /* ============================= */
+    /* CANDIDATE GRID CARDS */
+    /* ============================= */
+    .candidate-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 25px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        text-align: center;
+        margin-bottom: 24px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 24px); 
+    }
+    .candidate-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        border-color: #cbd5e1;
+    }
+    
+    .cand-avatar {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 15px auto;
+        background: #f1f5f9;
+        border-radius: 50%; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 35px;
+        color: #94a3b8;
+        border: 3px solid #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .cand-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+    .cand-role {
+        font-size: 14px;
+        color: #3b5bdb; 
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+    .cand-meta {
+        font-size: 13px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .cand-meta i {
+        color: #94a3b8;
+        margin-right: 4px;
+    }
+
+    .cand-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        margin-bottom: 25px;
+        flex-grow: 1; 
+    }
+    .skill-pill {
+        background: #f8fafc;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .btn-view-cand {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background: transparent;
+        border: 1px solid #3b5bdb;
+        color: #3b5bdb;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .candidate-card:hover .btn-view-cand {
+        background: #3b5bdb;
+        color: #fff;
+    }
+    
+    .level-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+        background: #f1f5f9;
+        color: #475569;
+        border-color: #cbd5e1;
+    }
+
+    .badge-junior { background: #d1fae5; color: #059669; border-color: #a7f3d0; }
+    .badge-mid { background: #fef3c7; color: #d97706; border-color: #fde68a; }
+    .badge-senior { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<section class="auth-hero" data-bg="{% static 'assets/images/auth/candidate.jpg' %}">
+    <div class="auth-hero-overlay">
+        <div class="container">
+            <h2>Find the Best Candidates</h2>
+            <div class="auth-hero-divider"></div>
+            <p>Connect with skilled professionals and grow your team effortlessly.<br>Use our advanced filters to find the perfect match for your needs.</p>
+        </div>
+    </div>
+</section>
+
+<div class="browse-section">
+    <div class="container">
+
+        <div class="search-job mb-5">
+            <form action="{% url 'search-candidates' 1 %}" method="GET">
+                <div class="search-nner">
+                    <div class="row">
+                        <div class="col-lg-10 col-md-9 col-xs-12 mb-3 mb-md-0">
+                            <input type="text" name="query" class="form-control" placeholder="Search candidates by keyword, role, or location..." value="{{ query|default:'' }}" required style="height: 54px;">
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-xs-12 button">
+                            <button type="submit" class="btn btn-common float-right" style="width: 100%; height: 54px; margin: 0; display: flex; align-items: center; justify-content: center;">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="row mb-4 align-items-center">
+            <div class="col-lg-6 col-12">
+                <h2 style="font-size: 24px; font-weight: 700; color: #0f172a;">Discover Top Talent</h2>
+                <p style="color: #64748b; font-size: 15px;">Browse thousands of skilled professionals looking for their next role.</p>
+            </div>
+            <div class="col-lg-6 col-12 text-lg-end text-start mt-3 mt-lg-0 d-flex align-items-center justify-content-lg-end">
+                <span style="font-size: 14px; color: #64748b;">Showing Candidates</span>
+                <button id="toggleFilterBtn" class="btn-toggle-filters">
+                    <i class="lni lni-funnel"></i> Filters
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="filterSidebarWrapper" class="col-lg-3 col-md-4 col-12 mb-4 mb-md-0 d-none">
+                <div class="filter-sidebar">
+                    <form method="GET" action="{% url 'browse-candidates-page' page_no=1 %}">
+                        <div class="filter-widget">
+                            <h4 class="filter-title">Location</h4>
+                            <input type="text" name="location" class="filter-input" placeholder="City or Region" value="{{ request.GET.location }}">
+                        </div>
+
+                        <div class="filter-widget">
+                            <h4 class="filter-title">Experience Level</h4>
+                            <select name="exp" class="filter-input">
+                                <option value="">All Levels</option>
+                                <option value="junior" {% if request.GET.exp == 'junior' %}selected{% endif %}>Junior (0-2 Yrs)</option>
+                                <option value="mid" {% if request.GET.exp == 'mid' %}selected{% endif %}>Mid Level (3-5 Yrs)</option>
+                                <option value="senior" {% if request.GET.exp == 'senior' %}selected{% endif %}>Senior (5+ Yrs)</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn-filter">Apply Filters</button>
+                        <a href="{% url 'browse-candidates-page' page_no=1 %}" class="btn-clear">Clear Filters</a>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="mainGridWrapper" class="col-lg-12 col-md-12 col-12">
+                <div class="row">
+                    {% for candidate in candidates %}
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                        <div class="candidate-card">
+                            <span class="level-badge badge-{{ candidate.experience_level|slugify }}">{{ candidate.experience_level }}</span>
+                            
+                            <div class="cand-avatar">
+                                {% if candidate.profile_picture %}
+                                    <img src="{{ candidate.profile_picture.url }}" class="avatar-img" alt="{{ candidate.user.first_name }}">
+                                {% else %}
+                                    <i class="lni lni-user"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <h3 class="cand-name">{{ candidate.user.first_name }} {{ candidate.user.last_name }}</h3>
+                            <div class="cand-role">{{ candidate.job_title }}</div>
+                            <div class="cand-meta">
+                                <span><i class="lni lni-map-marker"></i> {{candidate.location}}</span>
+                            </div>
+                            <div class="cand-skills">
+                                {% for skill in candidate.skills %}
+                                <span class="skill-pill">{{skill}}</span>
+                                {% endfor %}
+                            </div>
+                            <a href="{% url 'candidate-public-profile-page' candidate.username %}" class="btn-view-cand">View Profile</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p style="color: #64748b;">No candidates found matching your current filters.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="pagination-wrapper">
+                            {% if query %}
+                            <ul class="pagination-list">
+                                {% if page_no > 1 %}
+                                <li>
+                                    <a href="{% url 'search-candidates' page_no|add:'-1' %}?query={{query}}">
+                                        <i class="lni lni-arrow-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for i in page_range %}
+                                <li {% if page_no == i %}class="active"{% endif %}>
+                                    <a href="{% url 'search-candidates' i %}?query={{query}}">{{ i }}</a>
+                                </li>
+                                {% endfor %}
+
+                                {% if page_no < total_pages %}
+                                <li>
+                                    <a href="{% url 'search-candidates' page_no|add:'1' %}?query={{query}}">
+                                        <i class="lni lni-arrow-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                            {% else %}
+                            <ul class="pagination-list">
+                                {% if page_no > 1 %}
+                                <li>
+                                    <a href="{% url 'browse-candidates-page' page_no|add:'-1' %}?location={{ request.GET.location }}&exp={{ request.GET.exp }}">
+                                        <i class="lni lni-arrow-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for i in page_range %}
+                                <li {% if page_no == i %}class="active"{% endif %}>
+                                    <a href="{% url 'browse-candidates-page' i %}?location={{ request.GET.location }}&exp={{ request.GET.exp }}">{{ i }}</a>
+                                </li>
+                                {% endfor %}
+
+                                {% if page_no < total_pages %}
+                                <li>
+                                    <a href="{% url 'browse-candidates-page' page_no|add:'1' %}?location={{ request.GET.location }}&exp={{ request.GET.exp }}">
+                                        <i class="lni lni-arrow-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'components/footer.html' %}
+{% endblock %}
+
+{% block js %}
+<script>
+    // This script ensures the image loads correctly with the auth.css styles
+    document.querySelectorAll('.auth-hero[data-bg]').forEach(function (el) {
+        el.style.backgroundImage = 'url(' + el.dataset.bg + ')';
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggleFilterBtn');
+        const sidebar = document.getElementById('filterSidebarWrapper');
+        const mainGrid = document.getElementById('mainGridWrapper');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('location') || urlParams.has('exp')) {
+            sidebar.classList.remove('d-none');
+            mainGrid.classList.remove('col-lg-12', 'col-md-12');
+            mainGrid.classList.add('col-lg-9', 'col-md-8');
+            toggleBtn.classList.add('active');
+        }
+
+        toggleBtn.addEventListener('click', function() {
+            if (sidebar.classList.contains('d-none')) {
+                sidebar.classList.remove('d-none');
+                mainGrid.classList.remove('col-lg-12', 'col-md-12');
+                mainGrid.classList.add('col-lg-9', 'col-md-8');
+                toggleBtn.classList.add('active');
+            } else {
+                sidebar.classList.add('d-none');
+                mainGrid.classList.remove('col-lg-9', 'col-md-8');
+                mainGrid.classList.add('col-lg-12', 'col-md-12');
+                toggleBtn.classList.remove('active');
+            }
+        });
+    });
+</script>
+{% endblock %}

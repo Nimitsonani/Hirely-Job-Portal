@@ -1,0 +1,209 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block css %}
+<style>
+    /* FULL PAGE BACKGROUND */
+    .login-section {
+        background: #f5f7fb;
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 120px 0 60px;
+    }
+
+    body {
+        background: #f5f7fb;
+    }
+
+    /* CARD */
+    .login-card {
+        background: #fff;
+        padding: 50px 40px;
+        /* 🔥 increased spacing */
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    /* HEADING */
+    .heading h3 {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .heading p {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 25px;
+        /* 🔥 more gap below heading */
+    }
+
+    /* FORM SPACING */
+    .form-group {
+        margin-bottom: 20px;
+        /* 🔥 key spacing fix */
+    }
+
+    /* INPUTS */
+    .form-control {
+        border-radius: 6px;
+        padding: 12px 14px;
+        border: 1px solid #ddd;
+        transition: 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #3b5bdb;
+        box-shadow: 0 0 0 2px rgba(59, 91, 219, 0.1);
+    }
+
+    /* CHECKBOX ROW */
+    .form-group.d-flex {
+        margin-top: 5px;
+        margin-bottom: 25px;
+        /* 🔥 spacing before button */
+    }
+
+    /* BUTTON */
+    .login-btn {
+        background: #3b5bdb;
+        border: none;
+        padding: 12px;
+        font-weight: 500;
+        transition: 0.3s;
+        border-radius: 6px;
+    }
+
+    .login-btn:hover {
+        background: #2f4acb;
+    }
+
+    /* SPACE BELOW BUTTON */
+    .login-btn+p {
+        margin-top: 25px;
+        /* 🔥 spacing after button */
+    }
+
+    /* Password toggle */
+    .position-relative {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        color: #666;
+        z-index: 10;
+    }
+
+    .toggle-password::after {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 2px;
+        background: #666;
+        top: 50%;
+        left: 0;
+        transform: rotate(45deg);
+        display: none;
+    }
+
+    .toggle-password.show::after {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<section class="login-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7 col-12">
+
+                <div class="login-card">
+
+                    <div class="heading text-center mb-4">
+                        <h3>Welcome Back</h3>
+                        <p>Log in to continue your account and explore new jobs.</p>
+                    </div>
+
+                    <form action="{% url 'login-page' %}" method="post">
+                        {% csrf_token %}
+
+                        {% for error in login_form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+
+                        <div class="form-group">
+                            <label class="label">E-mail</label>
+                            {{ login_form.username }}
+                            {% for error in login_form.username.errors %}
+                            <div class="alert alert-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label">Password</label>
+                            <div class="position-relative">
+                                {{ login_form.password }}
+                                <span class="toggle-password lni lni-eye" onclick="togglePassword(this)"></span>
+                            </div>
+                            {% for error in login_form.password.errors %}
+                            <div class="alert alert-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox">
+                                <label class="form-check-label">Remember me</label>
+                            </div>
+                            <a href="#" class="text-primary">Forgot Password?</a>
+                        </div>
+
+                        <div class="form-group button">
+                            <button class="btn login-btn w-100">Log in</button>
+                        </div>
+
+                        <p class="text-center mt-3">
+                            Don’t have an account?
+                            <a href="{% url 'register-page' %}">Create one</a>
+                        </p>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block js %}
+<script>
+    function togglePassword(el) {
+        const input = el.closest('.position-relative').querySelector('input');
+
+        if (input.type === "password") {
+            input.type = "text";
+            el.classList.add("show");
+        } else {
+            input.type = "password";
+            el.classList.remove("show");
+        }
+    }
+</script>
+{% endblock %}
+
+{% endblock %}
