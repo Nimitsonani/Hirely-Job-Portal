@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if edit_job %}Edit Job{% else %}Post Job{% endif %}{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/auth.css' %}">
+{% endblock %}
+
+{% block body %}
+
+<section class="auth-hero" data-bg="{% static 'assets/images/breadcrumb/breadcrumb-bg.jpg' %}">
+    <div class="auth-hero-overlay">
+        <div class="container">
+
+            <h2>{% if edit_job %}Edit Job{% else %}Post a Job{% endif %}</h2>
+            <div class="auth-hero-divider"></div>
+
+            <p>
+                Business plan draws on a wide range of knowledge from different business disciplines. Business
+                draws on a wide range of different business .
+            </p>
+
+            <div style="margin-top: 20px;">
+                <a href="index.html" style="color: #fff;">Home</a>
+                <span style="color: #fff; margin: 0 10px;">|</span>
+                <span style="color: #fff;">Blog</span>
+                <span style="color: #fff; margin: 0 10px;">|</span>
+                <span style="color: #fff;">{% if edit_job %}Edit Job{% else %}Post a Job{% endif %}</span>
+            </div>
+
+        </div>
+    </div>
+</section>
+<form method="post" {% if edit_job %}action="{% url 'edit-job-page' job_id %}" {% else %} action="{% url 'post-job-page' %}"{% endif %}>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <section class="job-post section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 offset-lg-1 col-12">
+                    <div class="job-information">
+
+                        <h3 class="title">Job Information</h3>
+
+                        <div class="row">
+
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label>
+                                        Job Title <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                    <div class="text-danger">{{ form.title.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Category <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.category }}
+                                    {% if form.category.errors %}
+                                    <div class="text-danger">{{ form.category.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Job Type <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.job_type }}
+                                    {% if form.job_type.errors %}
+                                    <div class="text-danger">{{ form.job_type.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Location <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.location }}
+                                    {% if form.location.errors %}
+                                        <div class="text-danger">
+                                            {{ form.location.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Vacancy
+                                        <i class="lni lni-question-circle"
+                                            data-tooltip="Number of open positions available."></i>
+                                    </label>
+                                    {{ form.vacancy }}
+                                    {% if form.vacancy.errors %}
+                                        <div class="text-danger">
+                                            {{ form.vacancy.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Experience
+                                    </label>
+                                    {{ form.experience }}
+                                    {% if form.experience.errors %}
+                                        <div class="text-danger">
+                                            {{ form.experience.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Skills
+                                    </label>
+                                    {{ form.skills }}
+                                    {% if form.skills.errors %}
+                                        <div class="text-danger">
+                                            {{ form.skills.errors }}
+                                        </div>
+                                    {% endif %}
+                                    
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Min Salary <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.min_salary }}
+                                    {% if form.min_salary.errors %}
+                                        <div class="text-danger">
+                                            {{ form.min_salary.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Max Salary <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.max_salary }}
+                                    {% if form.max_salary.errors %}
+                                    <div class="text-danger">{{ form.max_salary.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Map URL
+                                        <i class="lni lni-question-circle"
+                                            data-tooltip="Paste Google Maps embed URL for job location."></i>
+                                    </label>
+                                    {{ form.map_url }}
+                                    {% if form.map_url.errors %}
+                                    <div class="text-danger">{{ form.map_url.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label>
+                                        Job Description <span class="text-danger">*</span>
+                                        <i class="lni lni-question-circle"
+                                            data-tooltip="Describe the job role, responsibilities, and expectations."></i>
+                                    </label>
+                                    {{ form.job_description }}
+                                    {% if form.job_description.errors %}
+                                    <div class="text-danger">{{ form.job_description.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label>
+                                        Responsibilities
+                                        <i class="lni lni-question-circle"
+                                            data-tooltip="List daily tasks and responsibilities for this role."></i>
+                                    </label>
+                                    {{ form.responsibilities }}
+                                    {% if form.responsibilities.errors %}
+                                    <div class="text-danger">{{ form.responsibilities.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label>
+                                        Requirements
+                                        <i class="lni lni-question-circle"
+                                            data-tooltip="Skills, qualifications, and experience required."></i>
+                                    </label>
+                                    {{ form.requirements }}
+                                    {% if form.requirements.errors %}
+                                    <div class="text-danger">{{ form.requirements.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label>
+                                        Benefits
+                                        <i class="lni lni-question-circle"
+                                            data-tooltip="Perks like insurance, bonuses, flexible work, etc."></i>
+                                    </label>
+                                    {{ form.benefits }}
+                                    {% if form.benefits.errors %}
+                                    <div class="text-danger">{{ form.benefits.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Application Deadline
+                                        <i class="lni lni-question-circle"
+                                            data-tooltip="Last date candidates can apply."></i>
+                                    </label>
+                                    {{ form.application_deadline }}
+                                    {% if form.application_deadline.errors %}
+                                    <div class="text-danger">{{ form.application_deadline.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        Terminate at
+                                        <i class="lni lni-question-circle"
+                                            data-tooltip="Job will automatically close after this date."></i>
+                                    </label>
+                                    {{ form.terminate_at }}
+                                    {% if form.terminate_at.errors %}
+                                    <div class="text-danger">{{ form.terminate_at.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-lg-12 button">
+                            <button class="btn">{% if edit_job %}Edit Job{% else %}Post a Job{% endif %}</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+{% endblock %}
+
+{% block js %}
+<script>
+    // Handles the hero background image
+    document.querySelectorAll('.auth-hero[data-bg]').forEach(function (el) {
+        el.style.backgroundImage = 'url(' + el.dataset.bg + ')';
+    });
+
+    // Auto-populates dates on initial load if they are empty
+    document.addEventListener("DOMContentLoaded", function() {
+        // Django auto-generates IDs based on the model field names (e.g., id_<fieldname>)
+        const deadlineInput = document.getElementById('id_application_deadline');
+        const terminateInput = document.getElementById('id_terminate_at');
+
+        // Helper function to format date as YYYY-MM-DD
+        function getFormattedDate(daysToAdd) {
+            let d = new Date();
+            d.setDate(d.getDate() + daysToAdd);
+            // slice(0,10) cleanly extracts just the YYYY-MM-DD portion from the ISO string
+            return d.toISOString().slice(0, 10); 
+        }
+
+        // If field exists and is completely empty, set defaults matching backend
+        if (deadlineInput && !deadlineInput.value) {
+            deadlineInput.value = getFormattedDate(30);
+        }
+
+        if (terminateInput && !terminateInput.value) {
+            terminateInput.value = getFormattedDate(40);
+        }
+    });
+</script>
+{% endblock %}

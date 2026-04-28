@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Browse Jobs{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/auth.css' %}?v=2">
+<style>
+    /* Centered layout matching the homepage */
+    .single-job {
+        align-items: center !important; /* Vertically centers the logo with the right-side content */
+    }
+
+    .single-job .job-image {
+        flex: 0 0 75px; /* Restricts the width so it isn't huge */
+        max-width: 75px;
+        display: flex;
+        align-items: center; /* Vertically centers the image inside its container */
+        justify-content: center;
+        margin-right: 25px;
+    }
+
+    .single-job .job-image img {
+        width: 100%;
+        height: auto;
+        max-height: 75px; /* Keeps the height constrained */
+        object-fit: contain;
+    }
+    
+    .single-job .job-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .single-job .job-button {
+        position: relative;
+        z-index: 5; 
+    }
+
+    /* BULLETPROOF 5-LINE TRUNCATION */
+    .single-job .job-content .job-desc {
+        display: -webkit-box !important;
+        -webkit-line-clamp: 5 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        margin-bottom: 15px !important; 
+        
+        /* Using hard pixel values so the theme can't shrink it */
+        line-height: 24px !important;
+        max-height: 120px !important; /* 24px * 5 lines = 120px */
+        white-space: normal !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="auth-hero" data-bg="{% static 'assets/images/breadcrumb/breadcrumb-bg.jpg' %}">
+    <div class="auth-hero-overlay">
+        <div class="container">
+            <h2>Browse Job</h2>
+            <div class="auth-hero-divider"></div>
+            <p>
+                Business plan draws on a wide range of knowledge from different business<br>
+                disciplines. Business draws on a wide range of different business.
+            </p>
+            <div style="margin-top: 20px;">
+                <a href="index.html" style="color: #fff;">Home</a>
+                <span style="color: #fff; margin: 0 10px;">|</span>
+                <span style="color: #fff;">Browse Job</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="find-job section">
+    <div class="search-job">
+        <div class="container wide-container">
+            <form action="{% url 'search-jobs' 1%}" method="GET">
+                <div class="search-nner">
+                    <div class="row">
+                        <div class="col-lg-10 col-md-9 col-xs-12">
+                            <input type="text" name="query" class="form-control" placeholder="Search jobs by title, keyword, or location..." value="{{ query|default:'' }}" required>
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-xs-12 button">
+                            <button type="submit" class="btn btn-common float-right" style="width: 100%;">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if jobs %}
+    <div class="container wide-container">
+        <div class="single-head">
+            <div class="row">
+                {% for job in jobs %}
+                <div class="col-lg-6 col-12">
+                    <div class="single-job">
+                        <div class="job-image">
+                            {% if job.company.profile_picture %}
+                                <img src="{{ job.company.profile_picture.url }}">
+                            {% else %}
+                                <img src="{% static 'assets/images/default/company_default.png' %}">
+                            {% endif %}
+                        </div>
+
+                        <div class="job-content">
+                            <h4>{{ job.title }}</h4>
+                            
+                            <p class="job-desc" title="{{ job.job_description|striptags }}">{{ job.job_description|striptags }}</p>
+
+                            <ul>
+                                <li>
+                                    <i class="lni lni-website"></i>
+                                    <a href="{{ job.company.website }}" target="_blank" rel="noopener noreferrer">
+                                        {{ job.company.website|cut:"https://"|cut:"http://"|cut:"www."|cut:"/" }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <i class="lni lni-dollar"></i>
+                                    ₹{{ job.min_salary }} - ₹{{ job.max_salary }}
+                                </li>
+                                <li>
+                                    <i class="lni lni-map-marker"></i>
+                                    {{ job.location }}
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="job-button">
+                            <ul>
+                                <li><a href="{% url 'job-details-page' job.job_id %}">Apply</a></li>
+                                <li><span>{{ job.get_job_type_display }}</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="pagination center">
+                        <ul class="pagination-list">
+                            {% if keyword and location %}
+                                {% if page_no > 1 %}
+                                <li>
+                                    <a href="{% url 'search-jobs' page_no|add:'-1' %}?keyword={{ keyword }}&location={{ location }}">
+                                        <i class="lni lni-arrow-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for i in page_range %}
+                                <li {% if page_no == i %}class="active"{% endif %}>
+                                    <a href="{% url 'search-jobs' i %}?keyword={{ keyword }}&location={{ location }}">{{ i }}</a>
+                                </li>
+                                {% endfor %}
+
+                                {% if page_no < no_of_pages %}
+                                <li>
+                                    <a href="{% url 'search-jobs' page_no|add:'1' %}?keyword={{ keyword }}&location={{ location }}">
+                                        <i class="lni lni-arrow-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% elif query %}
+                                {% if page_no > 1 %}
+                                <li>
+                                    <a href="{% url 'search-jobs' page_no|add:'-1' %}?query={{ query }}">
+                                        <i class="lni lni-arrow-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for i in page_range %}
+                                <li {% if page_no == i %}class="active"{% endif %}>
+                                    <a href="{% url 'search-jobs' i %}?query={{ query }}">{{ i }}</a>
+                                </li>
+                                {% endfor %}
+
+                                {% if page_no < no_of_pages %}
+                                <li>
+                                    <a href="{% url 'search-jobs' page_no|add:'1' %}?query={{ query }}">
+                                        <i class="lni lni-arrow-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                                {% if page_no > 1 %}
+                                <li>
+                                    <a href="{% url 'browse-jobs-page' page_no|add:'-1' %}">
+                                        <i class="lni lni-arrow-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for i in page_range %}
+                                <li {% if page_no == i %}class="active"{% endif %}>
+                                    <a href="{% url 'browse-jobs-page' i %}">{{ i }}</a>
+                                </li>
+                                {% endfor %}
+
+                                {% if page_no < no_of_pages %}
+                                <li>
+                                    <a href="{% url 'browse-jobs-page' page_no|add:'1' %}">
+                                        <i class="lni lni-arrow-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="container wide-container">
+        <div class="row justify-content-center text-center" style="padding: 60px 0;">
+            <div class="col-lg-6 col-md-8 col-12">
+                <div class="no-results-box" style="background: #fcfcfc; padding: 50px 30px; border-radius: 8px; border: 1px solid #eaeaea;">
+                    <i class="lni lni-empty-file" style="font-size: 60px; color: #a1a1a1; margin-bottom: 20px; display: inline-block;"></i>
+                    <h3 style="margin-bottom: 15px;">No Jobs Found</h3>
+                    {% if query %}
+                        <p style="color: #666; font-size: 16px;">We couldn't find any jobs matching your search for <strong>"{{ query }}"</strong>.</p>
+                        <p style="color: #888; font-size: 14px; margin-bottom: 25px;">Try adjusting your keywords or checking for typos.</p>
+                        <a href="{% url 'browse-jobs-page' 1 %}" class="btn btn-common">Clear Search</a>
+                    {% else %}
+                        <p style="color: #666; font-size: 16px;">There are currently no jobs available at the moment. Please check back later!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+{% include 'components/footer.html' %}
+{% endblock %}
+
+{% block js %}
+<script>
+    document.querySelectorAll('.auth-hero[data-bg]').forEach(function (el) {
+        el.style.backgroundImage = 'url(' + el.dataset.bg + ')';
+    });
+</script>
+{% endblock %}
