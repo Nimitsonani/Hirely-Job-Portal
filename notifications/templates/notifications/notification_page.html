@@ -1,0 +1,397 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+{% block title %}Notifications - Hirely{% endblock %}
+
+{% block css %}
+<style>
+    /* ============================= */
+    /* NOTIFICATIONS LAYOUT */
+    /* ============================= */
+    .notifications-section {
+        padding: 120px 0 100px 0;
+        background-color: #f8f9fa; /* Matches standard site background */
+        min-height: 100vh;
+    }
+
+    .notif-card-wrapper {
+        background: #ffffff;
+        border: 1px solid #eee; /* Matches your job category/hot jobs border */
+        border-radius: 8px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+    }
+
+    .notif-header {
+        padding: 25px 30px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notif-header h3 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0;
+        color: #202124;
+    }
+
+    .notif-header .update-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #007bff; /* Primary theme color */
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .notif-item {
+        padding: 25px 30px;
+        border-bottom: 1px solid #eee;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .notif-item:last-child {
+        border-bottom: none;
+    }
+
+    .notif-item:hover {
+        background-color: #fafafa;
+    }
+
+    /* Professional Blue Accent for Unread */
+    .notif-item.unread {
+        background-color: #f4f8ff;
+    }
+    
+    .notif-item.unread::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: #007bff;
+    }
+
+    .notif-top-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .n-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #202124;
+    }
+
+    .n-time {
+        font-size: 13px;
+        color: #777;
+        font-weight: 500;
+    }
+
+    .n-desc {
+        font-size: 14px;
+        color: #5f6368;
+        line-height: 1.6;
+    }
+
+    /* Load More Button */
+    .load-more-wrap {
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    .btn-hirely-pro {
+        display: inline-block;
+        padding: 14px 40px;
+        font-weight: 600;
+        border-radius: 6px;
+        font-size: 15px;
+        background-color: #007bff;
+        color: #fff !important;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+    }
+
+    .btn-hirely-pro:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+    }
+
+    .empty-msg {
+        padding: 50px;
+        text-align: center;
+        color: #999;
+    }
+
+    /* ============================= */
+    /* FLOATING MENU BUTTON */
+    /* ============================= */
+    .floating-menu-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        width: 50px;
+        height: 50px;
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        cursor: pointer;
+        z-index: 1030;
+        transition: all 0.3s ease;
+    }
+
+    .floating-menu-btn:hover {
+        background-color: #0056b3;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    /* ============================= */
+    /* OFF-CANVAS SIDEBAR */
+    /* ============================= */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(17, 24, 39, 0.4);
+        backdrop-filter: blur(3px); 
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .sidebar-drawer {
+        position: fixed;
+        top: 0;
+        left: -320px; 
+        width: 300px;
+        height: 100vh;
+        background: #ffffff;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+        z-index: 1050;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        padding: 30px 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar-drawer.open {
+        left: 0; 
+    }
+
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .sidebar-header h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #111827;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .btn-close-sidebar {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: #6b7280;
+        cursor: pointer;
+        transition: 0.2s;
+        padding: 5px;
+    }
+    .btn-close-sidebar:hover {
+        color: #dc2626; 
+    }
+
+    .sidebar-nav-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; 
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        color: #4b5563;
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+    .sidebar-link i {
+        margin-right: 12px;
+        font-size: 18px;
+        width: 20px;
+        text-align: center;
+        color: #9ca3af;
+        transition: color 0.2s ease;
+    }
+    .sidebar-link:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+    }
+    .sidebar-link:hover i {
+        color: #4b5563;
+    }
+    .sidebar-link.active {
+        background-color: #e0f2fe; 
+        color: #0369a1; 
+        font-weight: 600;
+    }
+    .sidebar-link.active i {
+        color: #0284c7;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<button id="openSidebarBtn" class="floating-menu-btn" aria-label="Open Dashboard Menu">
+    <i class="lni lni-menu"></i>
+</button>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="sidebar-drawer" id="sidebarDrawer">
+    <div class="sidebar-header">
+        <h4>Dashboard Menu</h4>
+        <button class="btn-close-sidebar" id="closeSidebarBtn">
+            <i class="lni lni-close"></i>
+        </button>
+    </div>
+    
+    <div class="sidebar-nav-list">
+        {% if user.user_type == 'candidate' %}
+            <a href="{% url 'browse-jobs-page' 1 %}" class="sidebar-link">
+                <i class="lni lni-search"></i> Browse Jobs
+            </a>
+            <a href="{% url 'dashboard-page' %}" class="sidebar-link">
+                <i class="lni lni-envelope"></i> Manage Applications
+            </a>
+            <a href="{% url 'candidate-dashboard-profile' %}" class="sidebar-link">
+                <i class="lni lni-user"></i> Profile
+            </a>
+            <a href="{% url 'notifications-page' 1 %}" class="sidebar-link active">
+                <i class="lni lni-alarm"></i> Notifications
+            </a>
+        {% elif user.user_type == 'company' %}
+            <a href="{% url 'post-job-page' %}" class="sidebar-link">
+                <i class="lni lni-circle-plus"></i> Add Job
+            </a>
+            <a href="{% url 'company-dashboard-manage-jobs' 1 %}" class="sidebar-link">
+                <i class="lni lni-briefcase"></i> Manage Jobs
+            </a>
+            <a href="{% url 'company-dashboard-profile' %}" class="sidebar-link">
+                <i class="lni lni-user"></i> Profile
+            </a>
+            <a href="{% url 'notifications-page' 1 %}" class="sidebar-link active">
+                <i class="lni lni-alarm"></i> Notifications
+            </a>
+        {% endif %}
+    </div>
+</div>
+<section class="notifications-section">
+    <div class="container"> 
+        <div class="row">
+            <div class="col-12">
+                
+                <div class="notif-card-wrapper">
+                    <div class="notif-header">
+                        <h3>Notifications</h3>
+                        {% if notifications %}
+                        <span class="update-label">Latest Updates</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="notif-list">
+                        {% for notification in notifications %}
+                        <div class="notif-item {% if not notification.is_read %}unread{% endif %}">
+                            <div class="notif-content">
+                                <div class="notif-top-row">
+                                    <div class="n-title">{{ notification.title }}</div>
+                                    <div class="n-time">{{ notification.created_at|date:"M d, H:i" }}</div>
+                                </div>
+                                <div class="n-desc">
+                                    {{ notification.message }}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-msg">
+                            <p>No notifications to show at this time.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if page_no < no_of_loadmore %}
+                <div class="load-more-wrap">
+                    <a href="{% url 'notifications-page' page_no|add:1 %}" class="btn-hirely-pro">
+                        Load More Notifications
+                    </a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'components/footer.html' %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const openBtn = document.getElementById('openSidebarBtn');
+        const closeBtn = document.getElementById('closeSidebarBtn');
+        const overlay = document.getElementById('sidebarOverlay');
+        const drawer = document.getElementById('sidebarDrawer');
+
+        function openSidebar() {
+            if(overlay && drawer) {
+                overlay.classList.add('show');
+                drawer.classList.add('open');
+                document.body.style.overflow = 'hidden'; 
+            }
+        }
+
+        function closeSidebar() {
+            if(overlay && drawer) {
+                overlay.classList.remove('show');
+                drawer.classList.remove('open');
+                document.body.style.overflow = ''; 
+            }
+        }
+
+        if(openBtn) openBtn.addEventListener('click', openSidebar);
+        if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if(overlay) overlay.addEventListener('click', closeSidebar);
+    });
+</script>
+{% endblock %}
